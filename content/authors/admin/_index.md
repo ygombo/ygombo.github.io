@@ -3,7 +3,7 @@
 title: Yoshua Gombo
 
 # Name pronunciation (optional)
-name_pronunciation: Yoshua Gombo
+name_pronunciation: 
 
 # Full name (for SEO)
 first_name: Yoshua
