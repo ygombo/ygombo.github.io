@@ -84,9 +84,9 @@ education:
     #   - lorem ipsum dolor sit amet, consectetur adipiscing elit
     #   - lorem ipsum dolor sit amet, consectetur adipiscing elit
 work:
-  - position: Director of Cloud Infrastructure
-    company_name: GenCoin
-    company_url: ''
+  - position: Chief Technology Officer
+    company_name: Konstruksi.AI
+    company_url: 'https://konstruksi.ai/'
     company_logo: ''
     date_start: 2021-01-01
     date_end: ''
