@@ -121,7 +121,7 @@ work:
     company_url: ''
     company_logo: ''
     date_start: 2023-06-01
-    date_end: 2023-09-31
+    date_end: 2023-09-15
     summary: |
       Responsibilities include:
       - Developed a facial detection functionality for the upcoming autonomous security robots by leveraging computer vision and deep learning approaches
@@ -130,7 +130,7 @@ work:
     company_url: ''
     company_logo: ''
     date_start: 2022-06-01
-    date_end: 2022-09-31
+    date_end: 2022-09-15
     summary: |
       Responsibilities include:
       - Improved perception capabilities of autonomous package-delivery robots by integrating 3D object detection feature using computer vision and deep learning techniques from LiDAR point cloud data
