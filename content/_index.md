@@ -35,9 +35,10 @@ sections:
       title: '📚 My Research'
       subtitle: ''
       text: |-
-        The goal of my research is to enable seamless cooperation among robots in multi agent systems. I studied a new decentralized control approach called delayed self-reinforcement (DSR), which uses information that each robot already has to help them move more cohesively, without requiring extra communication. Read in more details in one of my publications.
+        The goal of my research is to enable seamless cooperation among robots in multi agent systems. I studied a new decentralized control approach called delayed self-reinforcement (DSR), which uses information that each robot already has to help them move more cohesively, without requiring extra communication. 
         
-        Please reach out to collaborate 😃
+        Read in more details in one of my publications 😃
+        
     design:
       columns: '1'
   - block: collection
