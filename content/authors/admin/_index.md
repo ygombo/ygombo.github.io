@@ -88,24 +88,62 @@ work:
     company_name: Konstruksi.AI
     company_url: 'https://konstruksi.ai/'
     company_logo: ''
-    date_start: 2021-01-01
+    date_start: 2024-01-01
     date_end: ''
     summary: |2-
       Responsibilities include:
-      - lorem ipsum dolor sit amet, consectetur adipiscing elit
-      - lorem ipsum dolor sit amet, consectetur adipiscing elit
-      - lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - position: Backend Software Engineer
-    company_name: X
+      - Managing a team of software engineers and developers for the development of the core product
+      - Developing and implementing state-of-the-art computer vision artificial intelligence models to detect defects on construction sites
+      - Collaborating with clients in both private and public sectors for advancing the construction management workflow especially in Indonesia
+  - position: Graduate Researcher
+    company_name: University of Washington
     company_url: ''
     company_logo: ''
-    date_start: 2016-01-01
-    date_end: 2020-12-31
+    date_start: 2019-06-01
+    date_end: 2023-12-31
     summary: |
       Responsibilities include:
-      - Migrated infrastructure to a new data center
-      - lorem ipsum dolor sit amet, consectetur adipiscing elit
-      - lorem ipsum dolor sit amet, consectetur adipiscing elit
+      - Developed intelligent network-based control methods for multi-robot teams
+      - Designed system and control architecture for multi-robot teams experiment, incorporating industrial robots (ABB) as well as Arduino-based mobile robots
+      - Developed data-based machine learning algorithms to enable robot interactions with flexible structures
+  - position: Robotics and Controls Researcher
+    company_name: Boeing Advanced Research Center (BARC)
+    company_url: ''
+    company_logo: ''
+    date_start: 2021-09-01
+    date_end: 2023-12-31
+    summary: |
+      Responsibilities include:
+      - Designed and built a gantry-based mechatronics system for advanced composite manufacturing processes
+      - Collaborated with Boeing engineers on design of actuators, optimal sensing and control
+  - position: Robotics Perception Engineer Intern
+    company_name: DEKA Research and Development
+    company_url: ''
+    company_logo: ''
+    date_start: 2023-06-01
+    date_end: 2023-09-31
+    summary: |
+      Responsibilities include:
+      - Developed a facial detection functionality for the upcoming autonomous security robots by leveraging computer vision and deep learning approaches
+  - position: Robotics Engineer Intern
+    company_name: DEKA Research and Development
+    company_url: ''
+    company_logo: ''
+    date_start: 2022-06-01
+    date_end: 2022-09-31
+    summary: |
+      Responsibilities include:
+      - Improved perception capabilities of autonomous package-delivery robots by integrating 3D object detection feature using computer vision and deep learning techniques from LiDAR point cloud data
+  - position: Product Engineer
+    company_name: JELD-WEN, Inc
+    company_url: ''
+    company_logo: ''
+    date_start: 2015-06-01
+    date_end: 2018-06-15
+    summary: |
+      Responsibilities include:
+      - Innovated new composite window products and co-assigned of 20+ US patents
+      - Assessed the structural integrity of window/door designs using Finite Element Analysis (FEA)
 
 # Skills
 # Add your own SVG icons to `assets/media/icons/`
@@ -114,40 +152,47 @@ skills:
     items:
       - name: Python
         description: ''
-        percent: 80
+        percent: 90
         icon: code-bracket
-      - name: Data Science
+      - name: Robotics
         description: ''
         percent: 100
-        icon: chart-bar
-      - name: SQL
+        icon: chart-bar 
+      - name: MATLAB/Simulink
         description: ''
-        percent: 40
+        percent: 100
+        icon: code-bracket
+      - name: AI and Machine Learning
+        description: ''
+        percent: 80
         icon: circle-stack
+      - name: 3D Modeling
+        description: ''
+        percent: 70
+        icon: code-bracket
   - name: Hobbies
     color: '#eeac02'
     color_border: '#f0bf23'
     items:
-      - name: Hiking
+      - name: Soccer
         description: ''
-        percent: 60
+        percent: 100
         icon: person-simple-walk
       - name: Cats
         description: ''
-        percent: 100
+        percent: 70
         icon: cat
       - name: Photography
         description: ''
-        percent: 80
+        percent: 50
         icon: camera
 
 languages:
   - name: English
     percent: 100
-  - name: Chinese
-    percent: 75
-  - name: Portuguese
-    percent: 25
+  - name: Indonesian
+    percent: 100
+
 
 # Awards.
 #   Add/remove as many awards below as you like.
