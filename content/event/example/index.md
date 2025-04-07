@@ -1,31 +1,31 @@
 ---
-title: Example Talk
+title: Dynamic Cohesive Tracking in Networks
 
-event: Hugo Blox Builder Conference
-event_url: https://example.org
+event: Workshop - 2023 IEEE/ASME International Conference on Advanced Intelligent Mechatronics (AIM)
+event_url: https://sites.google.com/view/anujtiwariuw/workshopstutorials/aim-2023-workshop
 
-location: Hugo Blox Builder HQ
+location: Westin Hotel Downtown Seattle, WA
 address:
-  street: 450 Serra Mall
-  city: Stanford
-  region: CA
-  postcode: '94305'
+  street: 1900 5th Ave
+  city: Seattle
+  region: WA
+  postcode: '98101'
   country: United States
 
-summary: An example talk using Hugo Blox Builder's Markdown slides feature.
-abstract: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellusac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum. Sed ac faucibus dolor, scelerisque sollicitudin nisi. Cras purus urna, suscipit quis sapien eu, pulvinar tempor diam.'
+summary: Dynamic cohesive tracking in networks.
+abstract: 'Longitudinal cruise control with small inter-vehicle distances, for improved fuel efficiency, and increased traffic throughput, requires each vehicle in the network to move similarly, such as during speed transitions at traffic intersections [1, 2]. Likewise, a network of robots transporting a flexible object need to maintain distance-based forma- tion to avoid object deformation during transport [3, 4]. Therefore, cohesive transitions of networked multi agent systems, where each agent in the network responds similarly, is essential for multi-agent systems. A challenge is that current neighbor-based network control approaches mainly focus on achieving cohesion at the end but not during the transition, e.g., by improving the convergence rate of network responses to the final cohesive state [5, 6, 7]. Increasing the response speed of each agent in the network helps achieve this transition in a shorter amount of time [8], but cohesion can still be lost during the transition. Cohesion in networks can be achieved through a central- ized controller to ensure each agent performs similar actions, for instance using wireless communication [9]. However, such centralized approaches require explicit inter-agent communication, which incurs additional infrastructure cost, and can be susceptible to cybersecurity threats where intruder agents obtain access to the network information [10]. This workshop presents recent research developing decentralized network control strategies for cohesive network transitions, for achieving cohesion not just at the end of the transition but also during the transition.'
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
-date: '2030-06-01T13:00:00Z'
-date_end: '2030-06-01T15:00:00Z'
+date: '2023-06-27T13:00:00Z'
+date_end: '2023-06-27T15:00:00Z'
 all_day: false
 
 # Schedule page publish date (NOT talk date).
-publishDate: '2017-01-01T00:00:00Z'
+publishDate: '2023-06-27T00:00:00Z'
 
 authors:
-  - admin
+  - Anuj Tiwari, Yoshua Gombo, Yudong Lin
 
 tags: []
 
@@ -41,10 +41,10 @@ image:
 #    icon_pack: fab
 #    name: Follow
 #    url: https://twitter.com/georgecushen
-url_code: 'https://github.com'
-url_pdf: ''
-url_slides: 'https://slideshare.net'
-url_video: 'https://youtube.com'
+# url_code: 'https://github.com'
+# url_pdf: ''
+# url_slides: 'https://slideshare.net'
+# url_video: 'https://youtube.com'
 
 # Markdown Slides (optional).
 #   Associate this talk with Markdown slides.
@@ -59,7 +59,7 @@ slides: ""
 #   E.g. `projects = ["internal-project"]` references `content/project/deep-learning/index.md`.
 #   Otherwise, set `projects = []`.
 projects:
-  - example
+  - projects = []
 ---
 
 {{% callout note %}}
