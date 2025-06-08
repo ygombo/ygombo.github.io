@@ -5,7 +5,7 @@ authors:
 - Yoshua Gombo
 - Santosh Devasia
 date: "2019-04-07T00:00:00Z"
-doi: ""
+doi: "10.1109/ICC54714.2021.9703122"
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2021-12-20T00:00:00Z"
