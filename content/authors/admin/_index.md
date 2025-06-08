@@ -52,7 +52,7 @@ interests:
   - Artificial Intelligence
 
 education:
-  - area: PhD Mechanical Engineering
+  - area: PhD Mechanical Engineering (Controls & Robotics)
     institution: University of Washington
     date_start: 2019-09-01
     date_end: 2023-12-15
@@ -61,7 +61,7 @@ education:
     button:
       text: 'Read Thesis'
       url: 'https://example.com'
-  - area: MS Mechanical Engineering
+  - area: MS Mechanical Engineering (Mechatronics)
     institution: University of Washington
     date_start: 2018-09-01
     date_end: 2020-06-15
