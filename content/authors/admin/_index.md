@@ -49,7 +49,7 @@ profiles:
 interests:
   - Robotics
   - Controls
-  - Artificial Intelligence
+  - AI & Machine Learning
 
 education:
   - area: PhD Mechanical Engineering (Controls & Robotics)
