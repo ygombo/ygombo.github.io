@@ -30,7 +30,7 @@ abstract: In manufacturing operations such as clamping and drilling of elastic s
 
 tags:
 - Data-driven control
-featured: true
+featured: false
 
 # links:
 # - name: ""

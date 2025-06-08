@@ -28,7 +28,7 @@ abstract: Efficient and accurate robotic interactions with flexible structures a
 tags:
 - Data-driven control
 
-featured: false
+featured: true
 
 links:
 # - name: Custom Link
