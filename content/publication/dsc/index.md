@@ -7,8 +7,8 @@ authors:
 - Joseph Garbini
 - Santosh Devasia
 author_notes:
-date: "2015-09-01T00:00:00Z"
-doi: "https://doi.org/10.1109/LRA.2020.3036569"
+date: "2023-07-01T00:00:00Z"
+doi: "https://doi.org/10.1115/1.4063606"
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2023-07-01T00:00:00Z"

@@ -7,7 +7,7 @@ authors:
 - Henry Chang
 - Santosh Devasia
 author_notes:
-date: "2015-09-01T00:00:00Z"
+date: "2024-06-04T00:00:00Z"
 doi: "https://doi.org/10.1109/TMECH.2024.3399120"
 
 # Schedule page publish date (NOT publication's date).

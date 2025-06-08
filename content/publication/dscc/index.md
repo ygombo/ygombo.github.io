@@ -6,8 +6,8 @@ authors:
 - Yoshua Gombo
 - Joseph Garbini
 - Santosh Devasia
-date: "2019-04-07T00:00:00Z"
-doi: ""
+date: "2019-10-08T00:00:00Z"
+doi: "https://doi.org/10.1115/DSCC2019-9200"
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2019-10-08T00:00:00Z"
