@@ -1,14 +1,16 @@
 ---
-title: "Communication-free Cohesive Flexible-Object Transport using Decentralized Robot Networks"
+title: "Data-Based Learning for Control of Elastic Interactions Between Robot and Workpiece"
 authors:
+- Lance McCann
+- Chia Ning Lee
 - Yoshua Gombo
-- Anuj Tiwari
+- Joseph Garbini
 - Santosh Devasia
 date: "2019-04-07T00:00:00Z"
 doi: ""
 
 # Schedule page publish date (NOT publication's date).
-publishDate: "2021-05-025T00:00:00Z"
+publishDate: "2019-10-08T00:00:00Z"
 
 # Publication type.
 # Accepts a single type but formatted as a YAML list (for Hugo requirements).
@@ -16,11 +18,10 @@ publishDate: "2021-05-025T00:00:00Z"
 publication_types: ["article"]
 
 # Publication name and optional abbreviated publication name.
-publication: "2021 American Control Conference"
-publication_short: "2021 ACC"
+publication: "ASME Dynamic Systems and Control Conference"
+publication_short: "2019 ASME DSCC"
 
-abstract: Decentralized network theories focus on achieving consensus and in speeding up the rate of convergence to consensus. However, network cohesion (i.e., maintaining consensus) during transitions between consensus values is also important when transporting flexible structures. Deviations in the robot positions due to loss of cohesion when moving flexible structures from one position to another, such as uncured-composite aircraft wings, can cause large deformations, which in turn, can result in potential damage. The major contribution of this work is to develop a decentralized approach to transport flexible objects in a cohesive manner using local force measurements, without the need for additional communication between the robots. Additionally, stability conditions are developed for discrete-time implementation of the proposed cohesive-transition approach, and experimental results are presented, which show that the proposed cohesive transportation approach can reduce the relative deformations by 85% when compared to the case without it.
-
+abstract: Efficient and accurate robotic interactions with flexible structures are critical for many manufacturing processes where the elasticity of the workpiece and the robot must be accounted for. In particular, for clamping and drilling flexible structures, maintaining tool-workpiece normality and limiting shear forces are essential. The main contribution of this article is to show experimentally, that data acquired during a robotic clamping operation can be used to speed up the process for similar operations. Utilizing the learned parameters, a map between the measured forces and robot joint positions is used to develop time-based robot-joint (velocity) trajectories to achieve a specified robot-workpiece interaction. Experimental results show that the operating speed can be increased by three times while maintaining interaction forces and torques within acceptable levels.
 # Summary. An optional shortened abstract.
 # summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum.
 
@@ -32,14 +33,14 @@ abstract: Decentralized network theories focus on achieving consensus and in spe
 links:
 # - name: Custom Link
 #   url: http://example.org
-url_pdf: https://ieeexplore.ieee.org/abstract/document/9482946
+url_pdf: https://asmedigitalcollection.asme.org/DSCC/proceedings-abstract/DSCC2019/59148/1070516
 url_code: ''
-url_dataset: '#'
-url_poster: '#'
+url_dataset: ''
+url_poster: ''
 url_project: ''
 url_slides: ''
-url_source: '#'
-url_video: 'https://www.youtube.com/watch?v=0iVOC4SQC-U'
+url_source: ''
+url_video: 'https://www.youtube.com/watch?v=TVwALwlFLLI'
 
 # Featured image
 # To use, add an image named `featured.jpg/png` to your page's folder. 

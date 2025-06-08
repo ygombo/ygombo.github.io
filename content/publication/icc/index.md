@@ -1,14 +1,14 @@
 ---
-title: "Communication-free Cohesive Flexible-Object Transport using Decentralized Robot Networks"
+title: "Improving network's transition cohesion by approximating strongly damped waves using delayed self reinforcement"
 authors:
-- Yoshua Gombo
 - Anuj Tiwari
+- Yoshua Gombo
 - Santosh Devasia
 date: "2019-04-07T00:00:00Z"
 doi: ""
 
 # Schedule page publish date (NOT publication's date).
-publishDate: "2021-05-025T00:00:00Z"
+publishDate: "2021-12-20T00:00:00Z"
 
 # Publication type.
 # Accepts a single type but formatted as a YAML list (for Hugo requirements).
@@ -16,10 +16,10 @@ publishDate: "2021-05-025T00:00:00Z"
 publication_types: ["article"]
 
 # Publication name and optional abbreviated publication name.
-publication: "2021 American Control Conference"
-publication_short: "2021 ACC"
+publication: "IEEE Indian Control Conference"
+publication_short: "2021 ICC"
 
-abstract: Decentralized network theories focus on achieving consensus and in speeding up the rate of convergence to consensus. However, network cohesion (i.e., maintaining consensus) during transitions between consensus values is also important when transporting flexible structures. Deviations in the robot positions due to loss of cohesion when moving flexible structures from one position to another, such as uncured-composite aircraft wings, can cause large deformations, which in turn, can result in potential damage. The major contribution of this work is to develop a decentralized approach to transport flexible objects in a cohesive manner using local force measurements, without the need for additional communication between the robots. Additionally, stability conditions are developed for discrete-time implementation of the proposed cohesive-transition approach, and experimental results are presented, which show that the proposed cohesive transportation approach can reduce the relative deformations by 85% when compared to the case without it.
+abstract: Cohesive networks aim to achieve similar response in each agent not only at steady state but also during transitions from one consensus value to another. Standard consensus-based approaches approximate the diffusion equation, which leads to decay of transition information for agents that are farther away from the leader, and results in loss of cohesion during rapid changes. Increasing the alignment strength in standard first-order consensus-based approaches enables each agent to respond faster to the changes in neighbor states. Nevertheless, it does not necessarily increase cohesion during the transition. Moreover, increasing the alignment strength also requires an increase in update bandwidth. In contrast, delayed self reinforcement (DSR) approach enables increased cohesion without increasing the update bandwidth. The main contribution of this article is to explain this increased cohesion with DSR by showing that the DSR approximates a strongly damped wave equation, where each agent not only attempts to align with its neighboring states but also to align with the rate of change of its neighboring states.
 
 # Summary. An optional shortened abstract.
 # summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum.
@@ -32,14 +32,14 @@ abstract: Decentralized network theories focus on achieving consensus and in spe
 links:
 # - name: Custom Link
 #   url: http://example.org
-url_pdf: https://ieeexplore.ieee.org/abstract/document/9482946
+url_pdf: https://ieeexplore.ieee.org/abstract/document/9703122
 url_code: ''
-url_dataset: '#'
-url_poster: '#'
+url_dataset: ''
+url_poster: ''
 url_project: ''
 url_slides: ''
-url_source: '#'
-url_video: 'https://www.youtube.com/watch?v=0iVOC4SQC-U'
+url_source: ''
+url_video: ''
 
 # Featured image
 # To use, add an image named `featured.jpg/png` to your page's folder. 
