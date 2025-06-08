@@ -28,9 +28,9 @@ abstract: In manufacturing operations such as clamping and drilling of elastic s
 # Summary. An optional shortened abstract.
 # summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum.
 
-# tags:
-# - Source Themes
-featured: false
+tags:
+- Data-driven control
+featured: true
 
 # links:
 # - name: ""

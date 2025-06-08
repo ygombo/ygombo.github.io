@@ -24,10 +24,10 @@ abstract: Decentralized network theories focus on achieving consensus and in spe
 # Summary. An optional shortened abstract.
 # summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum.
 
-# tags:
-# - Large Language Models
+tags:
+- Networked robots
 
-# featured: false
+featured: false
 
 links:
 # - name: Custom Link
