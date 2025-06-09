@@ -38,7 +38,7 @@ profiles:
   - icon: brands/instagram
     url: https://www.instagram.com/ygombo_/?utm_source=qr#
   - icon: brands/github
-    url: https://github.com/gcushen
+    url: https://github.com/ygombo
   - icon: brands/linkedin
     url: https://www.linkedin.com/in/yoshua-gombo/
   - icon: academicons/google-scholar
