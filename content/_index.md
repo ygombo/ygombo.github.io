@@ -106,7 +106,7 @@ sections:
     content:
       title: Defended my dissertation in December 2023!
       text: |-
-        In December 2023, I succesfully defended my dissertation titled Reduced deformation transport of flexible objects using decentralized robot networks. 
+        In December 2023, I succesfully defended my dissertation which titled Reduced deformation transport of flexible objects using decentralized robot networks. 
       button:
         text: Read it here.
         url: https://www.proquest.com/openview/9f8f71e9bc9a295a35801e1d669d3a95/1?pq-origsite=gscholar&cbl=18750&diss=y
