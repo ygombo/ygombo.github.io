@@ -26,7 +26,7 @@ sections:
           # Add your image background to `assets/media/`.
           filename: bg3.jpg
           filters:
-            brightness: 0.7
+            brightness: 0.3
           size: cover
           position: center
           parallax: false
