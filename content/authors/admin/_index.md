@@ -226,4 +226,5 @@ awards:
 ## About Me
 
 Hi there! I am Yoshua, a robotics enthusiast and an engineer by training. I earned my Ph.D. in Mechanical Engineering, specializing in robotics and controls, from the University of Washington in Seattle, WA USA. My doctoral research was conducted under the guidance of Professor Santosh Devasia in the Precision Controls Laboratory. My research interests lie in the control of multi-robot teams, robotics applications in manufacturing and machine learning. My long-term vision is to foster seamless collaboration between humans and robots.
+
 Currently, I'm building Konstruksi.AI, a technology startup dedicated to providing AI-based solutions for real-time project monitoring in the construction industry. 
