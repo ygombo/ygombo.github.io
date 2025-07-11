@@ -1,7 +1,7 @@
 ---
-title: Sharing Session - PON Papua 2021
+title: Huawei Tech Day 2024 - Sharing Session
 
-event: PON Papua 2021
+event: Huawei Tech Day 2024
 event_url: 
 
 location: Online
@@ -10,27 +10,22 @@ address:
   city: 
   region: 
   postcode: 
-  country: Indonesia
+  country: Sorong, Papua
 
-summary: "This talk is a part of the PON Papua 2021 event to share about my experience as a Papuan."
-abstract: "This talk, presented as part of the PON Papua 2021 event, offers a personal reflection on my experiences as a Papuan. The session aims to share unique perspectives, challenges, and triumphs, providing attendees with an authentic glimpse into life and identity within Papua. It seeks to contribute to a deeper understanding of the diverse narratives that shape the Papuan community, fostering dialogue and appreciation during this significant regional event."
+summary: "This event is to share my experience as a Papuan tech startup co-founder."
+abstract: "This event features a personal account of my journey as a Papuan co-founder of a tech startup. The session will delve into the unique opportunities, challenges, and insights gained from navigating the entrepreneurial landscape within the Papuan context. Attendees will learn about the process of building a technology venture in the region, the innovative solutions being developed, and the broader vision for fostering a vibrant tech ecosystem in Indonesia. This talk aims to inspire and inform aspiring entrepreneurs and those interested in the burgeoning tech scene in Indonesia."
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
-date: '2021-07-21T21:00:00Z'
-date_end: '2021-07-21T23:00:00Z'
+date: '2024-06-15T09:00:00Z'
+date_end: '2024-06-15T12:00:00Z'
 all_day: false
 
 # Schedule page publish date (NOT talk date).
-publishDate: '2021-07-21T23:59:00Z'
+publishDate: '2024-07-21T23:59:00Z'
 
 authors:
   - Yoshua Gombo
-  - Pascal Sapari
-  - Nowela Auparay
-  - Moses Rawar
-  - Mei Osok
-  - Rafi Ahmad
 
 tags: []
 
