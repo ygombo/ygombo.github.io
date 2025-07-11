@@ -72,7 +72,7 @@ sections:
         folders:
           - event
     design:
-      view: talk
+      view: article-grid
       columns: 2
   # - block: collection
   #   id: news
