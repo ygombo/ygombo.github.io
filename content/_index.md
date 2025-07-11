@@ -55,6 +55,7 @@ sections:
   - block: collection
     content:
       title: Recent Publications
+      count: 0
       text: ""
       filters:
         folders:
@@ -66,6 +67,7 @@ sections:
     id: talks
     content:
       title: Recent & Upcoming Talks
+      count: 0
       filters:
         folders:
           - event
