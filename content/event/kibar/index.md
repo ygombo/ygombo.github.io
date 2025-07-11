@@ -1,7 +1,7 @@
 ---
-title: Computational Intelligence for Multi-Agent Robotic Networks
+title: Bidang Studi Engineering
 
-event: Virtual Workshop - IEEE CIS 
+event: Kitong Bicara - Embassy of Indonesia
 event_url: 
 
 location: Online
@@ -10,24 +10,23 @@ address:
   city: 
   region: 
   postcode: 
-  country: Indonesia
+  country: United States of America
 
-summary: "This workshop focuses on the development of the computational intelligence in the area of robotic networks."
-abstract: "This workshop explores the crucial role of computational intelligence (CI) in the development of multi-agent systems (MAS) and robotic networks. We'll delve into the innovative techniques and applications that enable diverse autonomous agents and interconnected robots to learn, adapt, and collaboratively achieve complex objectives. The focus will be on leveraging CI paradigms such as neural networks, fuzzy logic, evolutionary computation, and swarm intelligence to enhance communication, coordination, and collective decision-making within these sophisticated systems. Our aim is to foster advancements in designing robust, flexible, and intelligent multi-agent and robotic platforms capable of operating effectively in dynamic and challenging environments."
+summary: "This talk offers insights into studying in the United States, alongside a brief overview of my research."
+abstract: "This talk provides valuable insights for prospective students considering higher education in the United States. Drawing from personal experience, the presentation will offer practical advice and perspectives on the academic and cultural landscape of US universities. Additionally, the session will include a concise overview of my ongoing research, highlighting its key objectives, methodologies, and potential impact. Attendees will gain a dual perspective: understanding the journey of studying abroad and exploring a specific area of current academic inquiry."
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
-date: '2020-07-18T09:00:00Z'
-date_end: '2020-07-18T12:00:00Z'
+date: '2020-09-10T21:00:00Z'
+date_end: '2020-09-10T23:00:00Z'
 all_day: false
 
 # Schedule page publish date (NOT talk date).
-publishDate: '2020-07-18T12:00:00Z'
+publishDate: '2020-09-10T23:59:00Z'
 
 authors:
   - Yoshua Gombo
-  - Anuj Tiwari
-  - Ekta Samani
+  - Julianti Madiuw
 
 tags: []
 
