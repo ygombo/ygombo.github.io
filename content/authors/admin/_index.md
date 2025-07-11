@@ -60,7 +60,7 @@ education:
       Thesis on _Reduced deformation transport of flexible objects using decentralized robot networks_. Supervised by [Prof Santosh Devasia](https://faculty.washington.edu/devasia/). Presented papers at 2 IEEE conferences with the contributions being published in 3 IEEE journals.
     button:
       text: 'Read Thesis'
-      url: 'https://example.com'
+      url: 'https://scholar.google.com/citations?view_op=view_citation&hl=en&user=O3tM5OwAAAAJ&cstart=20&pagesize=80&citation_for_view=O3tM5OwAAAAJ:UebtZRa9Y70C'
   - area: MS Mechanical Engineering
     institution: University of Washington, USA
     date_start: 2018-09-01
