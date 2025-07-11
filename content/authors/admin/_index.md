@@ -53,7 +53,7 @@ interests:
 
 education:
   - area: PhD Mechanical Engineering
-    institution: University of Washington
+    institution: University of Washington, USA
     date_start: 2019-09-01
     date_end: 2023-12-15
     summary: |
@@ -62,7 +62,7 @@ education:
       text: 'Read Thesis'
       url: 'https://example.com'
   - area: MS Mechanical Engineering
-    institution: University of Washington
+    institution: University of Washington, USA
     date_start: 2018-09-01
     date_end: 2020-06-15
     # summary: |
@@ -73,7 +73,7 @@ education:
     #   - lorem ipsum dolor sit amet, consectetur adipiscing elit
     #   - lorem ipsum dolor sit amet, consectetur adipiscing elit
   - area: BS Mechanical Engineering
-    institution: Oregon Institute of Technology
+    institution: Oregon Institute of Technology, USA
     date_start: 2012-09-15
     date_end: 2015-12-15
     # summary: |
