@@ -1,5 +1,5 @@
 ---
-title: Sharing Session - PON Papua 2021
+title: PON Papua 2021 - Sharing Session
 
 event: PON Papua 2021
 event_url: 
