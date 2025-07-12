@@ -1,5 +1,5 @@
 ---
-title: Bidang Studi Engineering
+title: Robotics in Supply Chain
 
 event: Kitong Bicara - Embassy of Indonesia
 event_url: 
