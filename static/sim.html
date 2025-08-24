@@ -38,7 +38,7 @@
 <body>
 <header>
   <h1>Interactive Simulation — Standard vs DSR (Object Transport using Robot Networks)</h1>
-  <div class="note">How to run: Use the sliders and dropdowns on the left to adjust parameters in real-time. Press ▶ Run to start, ⏸ Pause to stop, and ↺ Reset to restart.</div>
+  <!-- <div class="note">How to run: Use the sliders and dropdowns on the left to adjust parameters in real-time. Press ▶ Run to start, ⏸ Pause to stop, and ↺ Reset to restart.</div> -->
   <div class="note">Models from Gombo, Tiwari, Devasia (ACC2021 Paper). Update laws:<br>
     <span class="pill">Standard</span> Y[m+1] = (I − γ δt K) Y[m] + γ δt B y<sub>d</sub>[m]
     &nbsp; | &nbsp;
@@ -495,8 +495,6 @@
   //     defMetricEl.innerHTML = `Std max: ${fmt(maxDstd,3)} &nbsp; | &nbsp; DSR max: ${fmt(maxDdsr,3)}`;
   //   }
   // }
-
-  
 
   // Listeners
   [nEl, topoEl, stiffEl, kpinEl, leadersEl, dtEl, gammaEl, alphaEl, betaEl, ydTypeEl, ydAEl, ydFEl, y0El, tmaxEl].forEach(inp=>{
