@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Interactive Simulation: Standard vs DSR (Pinned Laplacian Tracking)</title>
+<style>
+  :root{
+    --bg:#0b0f14;--panel:#111823;--ink:#e6eef8;--muted:#9fb3c8;--accent:#5bd6ff;--accent2:#7effa9;--warn:#ffb86b;--bad:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+  header{padding:18px 20px;border-bottom:1px solid #1b2330;background:linear-gradient(180deg,#0d1420,#0a0f16)}
+  h1{margin:0;font-size:18px;letter-spacing:.2px}
+  .container{display:grid;grid-template-columns: 330px 1fr;gap:14px;padding:14px}
+  .card{background:var(--panel);border:1px solid #1b2330;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  .panel{padding:14px}
+  .controls{display:grid;gap:10px}
+  .row{display:grid;grid-template-columns: 1fr auto;gap:10px;align-items:center}
+  .row label{color:var(--muted);font-size:12px}
+  input[type=range]{width:100%}
+  input[type=number], select{width:100%;background:#0c1118;color:var(--ink);border:1px solid #1f2a3a;border-radius:10px;padding:8px}
+  .btns{display:flex;gap:8px;margin-top:8px}
+  button{background:#152132;color:var(--ink);border:1px solid #203149;border-radius:12px;padding:8px 12px;cursor:pointer}
+  button:hover{filter:brightness(1.1)}
+  .grid{display:grid;grid-template-columns: 1fr 1fr;gap:12px}
+  .metrics{display:grid;grid-template-columns: repeat(2, minmax(0,1fr));gap:10px}
+  .metric{background:#0c1118;border:1px solid #1f2a3a;border-radius:12px;padding:10px}
+  .metric h3{margin:0 0 6px 0;font-size:12px;color:var(--muted)}
+  .metric .val{font-size:18px}
+  canvas{width:100%;height:260px;background:#0a0f15;border-radius:12px;border:1px solid #1b2330}
+  .note{color:var(--muted);font-size:12px;margin-top:8px}
+  .pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#0c1118;border:1px solid #203149;color:var(--muted);font-size:11px}
+  .warn{color:var(--warn)}
+  .bad{color:var(--bad)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Interactive Simulation — Standard vs DSR (Pinned Laplacian Tracking)</h1>
+  <div class="note">Models from Gombo, Tiwari, Devasia (arXiv:2102.09056). Update laws:<br>
+    <span class="pill">Standard</span> Y[m+1] = (I − γ δt K) Y[m] + γ δt B y<sub>d</sub>[m]
+    &nbsp; | &nbsp;
+    <span class="pill">DSR</span> Y[m+1] = Y[m] − αβ δt K Y[m] + αβ δt B y<sub>d</sub>[m] + [I − βK](Y[m] − Y[m−1])
+  </div>
+</header>
+<div class="container">
+  <div class="card panel">
+    <div class="controls">
+      <div class="row"><label>Agents (n)</label><input id="n" type="number" min="2" max="200" value="20"></div>
+      <div class="row"><label>Topology</label>
+        <select id="topo">
+          <option value="line">Line (neighbors i±1)</option>
+          <option value="ring">Ring</option>
+          <option value="complete">Complete</option>
+        </select>
+      </div>
+      <div class="row"><label>Neighbor stiffness (s)</label><input id="stiff" type="range" min="0" max="10" step="0.05" value="1"><span id="stiff_v">1.00</span></div>
+      <div class="row"><label>Pin (leader) stiffness (kₚ)</label><input id="kpin" type="range" min="0" max="10" step="0.1" value="2"><span id="kpin_v">2.0</span></div>
+      <div class="row"><label>Leaders (first L agents)</label><input id="leaders" type="number" min="1" max="50" value="1"></div>
+      <hr/>
+      <div class="row"><label>δt (time step)</label><input id="dt" type="range" min="0.001" max="0.2" step="0.001" value="0.03"><span id="dt_v">0.030</span></div>
+      <div class="row"><label>γ (standard)</label><input id="gamma" type="range" min="0" max="5" step="0.01" value="1.0"><span id="gamma_v">1.00</span></div>
+      <div class="row"><label>α (DSR)</label><input id="alpha" type="range" min="0" max="5" step="0.01" value="1.0"><span id="alpha_v">1.00</span></div>
+      <div class="row"><label>β (DSR)</label><input id="beta" type="range" min="0" max="2" step="0.005" value="0.5"><span id="beta_v">0.500</span></div>
+      <div class="row"><label>Initial offset y(0)</label><input id="y0" type="range" min="0" max="2" step="0.01" value="0"><span id="y0_v">0.00</span></div>
+      <hr/>
+      <div class="row"><label>Desired input type</label>
+        <select id="ydType">
+          <option value="step">Step</option>
+          <option value="ramp">Ramp</option>
+          <option value="sine">Sine</option>
+        </select>
+      </div>
+      <div class="row"><label>Step amplitude / Ramp rate / Sine amp</label><input id="ydA" type="range" min="0" max="5" step="0.05" value="1"><span id="ydA_v">1.00</span></div>
+      <div class="row"><label>Sine frequency (Hz)</label><input id="ydF" type="range" min="0" max="2" step="0.01" value="0.20"><span id="ydF_v">0.20</span></div>
+
+      <!-- NEW: Simulation time control -->
+      <div class="row"><label>Simulation time (s)</label><input id="tmax" type="number" min="0.1" max="1000" step="0.1" value="10"></div>
+
+      <div class="btns">
+        <button id="run">▶ Run</button>
+        <button id="pause">⏸ Pause</button>
+        <button id="reset">↺ Reset</button>
+        <button id="randomize">🎲 Random Y(0)</button>
+      </div>
+      <div class="note" id="stabilityNote">—</div>
+    </div>
+  </div>
+  <div class="card panel">
+    <div class="grid">
+      <div class="card panel">
+        <h3 style="margin:0 0 8px 0;color:var(--muted)">Agent States (index vs y)</h3>
+        <!-- keep same canvas attributes so layout unchanged -->
+        <canvas id="canvasAgents" width="900" height="260"></canvas>
+        <div class="note">Blue: Standard • Green: DSR • Grey line shows desired y<sub>d</sub> (scalar) </div>
+        <div class="note">Y-axis fixed using computed bounds based on inputs (so it won't autoscale each frame).</div>
+      </div>
+      <div class="card panel">
+        <h3 style="margin:0 0 8px 0;color:var(--muted)">Deformation & Tracking (history)</h3>
+        <canvas id="canvasHist" width="900" height="260"></canvas>
+        <div class="note">Tracks max deformation D = max(y) − min(y) and worst-case tracking error max<sub>k</sub>|y<sub>k</sub> − y<sub>d</sub>| for both methods.</div>
+      </div>
+    </div>
+    <!-- Time vs positions panel -->
+    <div class="card panel" style="margin-top:12px">
+      <h3 style="margin:0 0 8px 0;color:var(--muted)">Time vs Agent Positions</h3>
+      <canvas id="canvasTime" width="900" height="260"></canvas>
+      <div class="note">Thin traces: per-agent; Bold traces: mean across agents (Std & DSR).</div>
+    </div>
+    <div class="metrics" style="margin-top:12px">
+      <div class="metric"><h3>λ<sub>max</sub>(K)</h3><div class="val" id="lamMax">—</div></div>
+      <div class="metric"><h3>Standard stability</h3><div class="val" id="stdStable">—</div><div class="note">Requires 0 &lt; γ·δt &lt; 2/λ<sub>max</sub></div></div>
+      <div class="metric"><h3>DSR stability bound</h3><div class="val" id="dsrBound">—</div><div class="note">β &lt; 4 / (λ<sub>max</sub>(α·δt + 2))</div></div>
+      <div class="metric"><h3>Max deformation (min so far)</h3><div class="val" id="defMetric">—</div></div>
+      <div class="metric"><h3>Worst-case tracking error</h3><div class="val" id="trackMetric">—</div></div>
+      <div class="metric"><h3>Settling time estimate</h3><div class="val" id="settle">—</div><div class="note">When max |y−y<sub>d</sub>| ≤ ε (ε=0.02·stepAmp) for 1s</div></div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const el = id => document.getElementById(id);
+  const nEl = el('n'), topoEl = el('topo'), stiffEl = el('stiff'), kpinEl = el('kpin'), leadersEl = el('leaders');
+  const dtEl = el('dt'), gammaEl = el('gamma'), alphaEl = el('alpha'), betaEl = el('beta'), y0El = el('y0');
+  const ydTypeEl = el('ydType'), ydAEl = el('ydA'), ydFEl = el('ydF'), tmaxEl = el('tmax');
+  const canvasAgents = el('canvasAgents'), ctxA = canvasAgents.getContext('2d');
+  const canvasHist = el('canvasHist'), ctxH = canvasHist.getContext('2d');
+  const canvasTime = el('canvasTime'), ctxT = canvasTime.getContext('2d');
+  const stiffV = el('stiff_v'), kpinV = el('kpin_v'), dtV = el('dt_v'), gammaV = el('gamma_v'), alphaV = el('alpha_v'), betaV = el('beta_v'), ydAV = el('ydA_v'), ydFV = el('ydF_v'), y0V = el('y0_v');
+  const lamMaxEl = el('lamMax'), stdStableEl = el('stdStable'), dsrBoundEl = el('dsrBound'), stabilityNote = el('stabilityNote');
+  const defMetricEl = el('defMetric'), trackMetricEl = el('trackMetric'), settleEl = el('settle');
+
+  function fmt(x, d=3){ return (Math.abs(x) < 1e-12 ? 0 : x).toFixed(d); }
+
+  // State & params
+  let N = parseInt(nEl.value,10);
+  let topo = topoEl.value;
+  let s = parseFloat(stiffEl.value);
+  let kp = parseFloat(kpinEl.value);
+  let L = parseInt(leadersEl.value,10);
+  let dt = parseFloat(dtEl.value);
+  let gamma = parseFloat(gammaEl.value);
+  let alpha = parseFloat(alphaEl.value);
+  let beta = parseFloat(betaEl.value);
+  let y0 = parseFloat(y0El.value);
+  let ydType = ydTypeEl.value, ydA = parseFloat(ydAEl.value), ydF = parseFloat(ydFEl.value);
+  let Tmax = parseFloat(tmaxEl.value);
+
+  let K, B, lamMax;
+  let t = 0, step = 0;
+  let Y_std = [], Y_dsr = [], Yprev_dsr = [], Y0_std = [], Y0_dsr = [];
+  let running = false;
+
+  const histLen = 2000;
+  let hist = {D_std:[], D_dsr:[], E_std:[], E_dsr:[], T:[], Y_std:[], Y_dsr:[], Yd:[]};
+  let best = {D_std: Infinity, D_dsr: Infinity, E_std: Infinity, E_dsr: Infinity};
+
+  // Fixed y-axis range for figure 1 (computed at rebuild and kept constant while sim runs)
+  let yAxisMin = -1, yAxisMax = 1;
+
+  // Build pinned Laplacian K and B vector
+  function buildKB(){
+    K = Array(N).fill(0).map(()=>Array(N).fill(0));
+    B = Array(N).fill(0);
+    const leaders = new Set(Array.from({length:Math.max(1, Math.min(L,N))}, (_,i)=>i)); // first L agents are leaders
+    // Graph stiffness
+    function connect(i,j){ if(i===j) return; K[i][i]+=s; K[j][j]+=s; K[i][j]-=s; K[j][i]-=s; }
+    if (topo==='line' || topo==='ring'){
+      for(let i=0;i<N-1;i++) connect(i,i+1);
+      if (topo==='ring') connect(0,N-1);
+    } else if (topo==='complete'){
+      for(let i=0;i<N;i++) for(let j=i+1;j<N;j++) connect(i,j);
+    }
+    // Pinning
+    leaders.forEach(k=>{ K[k][k]+=kp; B[k]=kp; });
+    // Estimate largest eigenvalue via power iteration (symmetric, positive semidef)
+    lamMax = powerIterMaxEig(K);
+    if(!isFinite(lamMax) || lamMax<=0) lamMax = 1e-6;
+  }
+
+  function powerIterMaxEig(M){
+    const n=M.length; let v=Array(n).fill(0).map(()=>Math.random());
+    let norm = Math.hypot(...v); if(norm===0) norm = 1; v=v.map(x=>x/norm);
+    let lambda=0;
+    for(let it=0; it<120; it++){
+      const w = mulMatVec(M, v);
+      const nrm = Math.hypot(...w) || 1e-9;
+      v = w.map(x=>x/nrm);
+      const num = dot(v, mulMatVec(M,v));
+      const den = dot(v,v) || 1e-9;
+      lambda = num/den;
+    }
+    return lambda;
+  }
+
+  function mulMatVec(M, v){ const n=M.length; const r=Array(n).fill(0); for(let i=0;i<n;i++){ let s=0; const Mi=M[i]; for(let j=0;j<n;j++) s+=Mi[j]*v[j]; r[i]=s; } return r; }
+  function addVec(a,b){ return a.map((x,i)=>x+b[i]); }
+  function subVec(a,b){ return a.map((x,i)=>x-b[i]); }
+  function scalVec(a,c){ return a.map(x=>x*c); }
+  function dot(a,b){ let s=0; for(let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
+  function max(a){ return Math.max.apply(null,a); }
+  function min(a){ return Math.min.apply(null,a); }
+  function maxAbs(a){ let m=0; for(let i=0;i<a.length;i++){ const q=Math.abs(a[i]); if(q>m)m=q; } return m; }
+
+  // compute expected maximum desired over the sim horizon (used to set fixed y-axis)
+  function expectedMaxDesired(){
+    if (ydType==='step') return Math.abs(ydA);
+    if (ydType==='sine') return Math.abs(ydA);
+    if (ydType==='ramp') return Math.abs(ydA) * Math.max(1, Tmax); // ydA is ramp rate; over Tmax
+    return Math.abs(ydA);
+  }
+
+  function desired(m){
+    const time = m*dt;
+    if (ydType==='step') return ydA; // constant step at t>=0
+    if (ydType==='ramp') return ydA*time;
+    if (ydType==='sine') return ydA*Math.sin(2*Math.PI*ydF*time);
+    return 0;
+  }
+
+  function resetStates(){
+    Y_std = Array(N).fill(y0);
+    Y_dsr = Array(N).fill(y0);
+    Yprev_dsr = Array(N).fill(y0);
+    Y0_std = Y_std.slice();
+    Y0_dsr = Y_dsr.slice();
+    t=0; step=0;
+    hist = {D_std:[], D_dsr:[], E_std:[], E_dsr:[], T:[], Y_std:[], Y_dsr:[], Yd:[]};
+    best={D_std:Infinity,D_dsr:Infinity,E_std:Infinity,E_dsr:Infinity};
+  }
+
+  function stabilityStatus(){
+    const condStd = gamma < (2/(dt*lamMax)) && gamma > 0;
+    const betaMax = 4 / (lamMax*(alpha*dt + 2));
+    const condDSR = (alpha>0) && (beta>0) && (beta < betaMax);
+    lamMaxEl.textContent = fmt(lamMax,3);
+    stdStableEl.innerHTML = condStd ? '<span class="pill">OK</span>' : `<span class="pill bad">violated</span> (γ·δt = ${fmt(gamma*dt,3)})`;
+    dsrBoundEl.innerHTML = (alpha>0 ? `β< ${fmt(betaMax,3)} (now β=${fmt(beta,3)})` : 'α must be > 0');
+    stabilityNote.innerHTML = (!condStd?'<div class="bad">Standard may be unstable.</div>':'') + (!condDSR?'<div class="warn">DSR bound violated — simulation may diverge.</div>':'');
+  }
+
+  function stepOnce(){
+    // common
+    const yd = desired(step);
+    const KY_std = mulMatVec(K, Y_std);
+    const KY_dsr = mulMatVec(K, Y_dsr);
+
+    // Standard: Y+ = (I - γ dt K) Y + γ dt B yd
+    let Ynext_std = Array(N);
+    for(let i=0;i<N;i++){
+      Ynext_std[i] = Y_std[i] - gamma*dt*KY_std[i] + gamma*dt*B[i]*yd;
+    }
+
+    // DSR: Y+ = Y − αβ dt K Y + αβ dt B yd + (I − βK)(Y − Yprev)
+    let Yminus = subVec(Y_dsr, Yprev_dsr);
+    const KYminus = mulMatVec(K, Yminus);
+    let Ynext_dsr = Array(N);
+    for(let i=0;i<N;i++){
+      const term1 = Y_dsr[i] - (alpha*beta*dt)*KY_dsr[i] + (alpha*beta*dt)*B[i]*yd;
+      const term2 = Yminus[i] - beta*KYminus[i];
+      Ynext_dsr[i] = term1 + term2;
+    }
+
+    // Update
+    Y_std = Ynext_std;
+    Yprev_dsr = Y_dsr;
+    Y_dsr = Ynext_dsr;
+
+    // Metrics
+    const D_std = max(Y_std) - min(Y_std);
+    const D_dsr = max(Y_dsr) - min(Y_dsr);
+    const E_std = maxAbs(Y_std.map(y=>y-yd));
+    const E_dsr = maxAbs(Y_dsr.map(y=>y-yd));
+
+    hist.D_std.push(D_std); hist.D_dsr.push(D_dsr);
+    hist.E_std.push(E_std); hist.E_dsr.push(E_dsr);
+    hist.T.push(t);
+    // store full state snapshots
+    hist.Y_std.push([...Y_std]);
+    hist.Y_dsr.push([...Y_dsr]);
+    hist.Yd.push(yd);
+
+    if(hist.T.length>histLen){ ['D_std','D_dsr','E_std','E_dsr','T','Y_std','Y_dsr','Yd'].forEach(k=>hist[k].shift()); }
+
+    best.D_std = Math.min(best.D_std, D_std);
+    best.D_dsr = Math.min(best.D_dsr, D_dsr);
+    best.E_std = Math.min(best.E_std, E_std);
+    best.E_dsr = Math.min(best.E_dsr, E_dsr);
+
+    // Settling time estimate when both methods within epsilon for 1s
+    const eps = 0.02 * (ydType==='step'? ydA : (ydType==='ramp'? Math.max(ydA*dt*step, 1) : Math.max(ydA,1)));
+    const windowSteps = Math.max(1, Math.round(1/dt));
+    let tsStd = '—', tsDsr = '—';
+    if (hist.E_std.length>=windowSteps){
+      const okStd = hist.E_std.slice(-windowSteps).every(v=>v<=eps);
+      const okDsr = hist.E_dsr.slice(-windowSteps).every(v=>v<=eps);
+      if (okStd) tsStd = (t).toFixed(2)+' s';
+      if (okDsr) tsDsr = (t).toFixed(2)+' s';
+    }
+    settleEl.innerHTML = `Std: ${tsStd} &nbsp; | &nbsp; DSR: ${tsDsr}`;
+
+    defMetricEl.innerHTML = `Std min: ${fmt(best.D_std,3)} &nbsp; | &nbsp; DSR min: ${fmt(best.D_dsr,3)}`;
+    trackMetricEl.innerHTML = `Std min: ${fmt(best.E_std,3)} &nbsp; | &nbsp; DSR min: ${fmt(best.E_dsr,3)}`;
+
+    // Draw
+    drawAgents(yd);
+    drawHistory();
+    drawTimeSeries();
+
+    // time
+    step++; t += dt;
+  }
+
+  function drawAgents(yd){
+    const w = canvasAgents.width, h = canvasAgents.height; ctxA.clearRect(0,0,w,h);
+    // Axes
+    ctxA.globalAlpha = 1; ctxA.lineWidth=1; ctxA.strokeStyle = '#243246';
+    ctxA.beginPath(); ctxA.moveTo(40, h-30); ctxA.lineTo(w-10, h-30); ctxA.stroke(); // x-axis
+    ctxA.beginPath(); ctxA.moveTo(40, 10); ctxA.lineTo(40, h-30); ctxA.stroke(); // y-axis
+
+    // Use fixed y-axis computed at rebuild()
+    let yMin = yAxisMin, yMax = yAxisMax;
+    if (yMax===yMin){ yMax = yMin+1; }
+    const x0=50, x1=w-20, y0=h-40, y1=20; // plot area
+    const xn = i=> x0 + (x1-x0) * (i/(Math.max(1,N-1)));
+    const yn = y=> y0 - (y0-y1)*((y - yMin)/(yMax - yMin));
+
+    // draw y ticks (5 ticks)
+    ctxA.fillStyle = '#9fb3c8'; ctxA.font = '11px system-ui';
+    for(let k=0;k<=4;k++){
+      const val = yMin + (yMax-yMin)*(k/4);
+      const yPos = yn(val);
+      ctxA.fillText(fmt(val,2), 8, yPos+3);
+      ctxA.beginPath(); ctxA.moveTo(40-6, yPos); ctxA.lineTo(40, yPos); ctxA.stroke();
+    }
+
+    // Desired line
+    ctxA.strokeStyle = '#6b7280'; ctxA.setLineDash([4,4]); ctxA.beginPath(); ctxA.moveTo(x0, yn(yd)); ctxA.lineTo(x1, yn(yd)); ctxA.stroke(); ctxA.setLineDash([]);
+
+    // Standard (blue)
+    ctxA.fillStyle = '#5bd6ff';
+    for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_std[i]); ctxA.beginPath(); ctxA.arc(x,y,3,0,Math.PI*2); ctxA.fill(); }
+    ctxA.strokeStyle = '#5bd6ff88'; ctxA.beginPath(); for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_std[i]); if(i===0) ctxA.moveTo(x,y); else ctxA.lineTo(x,y);} ctxA.stroke();
+
+    // DSR (green)
+    ctxA.fillStyle = '#7effa9';
+    for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_dsr[i]); ctxA.beginPath(); ctxA.arc(x,y,3,0,Math.PI*2); ctxA.fill(); }
+    ctxA.strokeStyle = '#7effa988'; ctxA.beginPath(); for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_dsr[i]); if(i===0) ctxA.moveTo(x,y); else ctxA.lineTo(x,y);} ctxA.stroke();
+
+    // Labels
+    ctxA.fillStyle = '#9fb3c8'; ctxA.fillText('Index', (x0+x1)/2-15, h-10); ctxA.save(); ctxA.translate(12,(y0+y1)/2); ctxA.rotate(-Math.PI/2); ctxA.fillText('y', 0,0); ctxA.restore();
+  }
+
+  function drawHistory(){
+    const w=canvasHist.width, h=canvasHist.height; ctxH.clearRect(0,0,w,h);
+    const x0=40, x1=w-10, y0=h-30, y1=18;
+    if(hist.T.length<2) return;
+
+    // vertical range
+    let yy = hist.D_std.concat(hist.D_dsr).concat(hist.E_std).concat(hist.E_dsr);
+    if(yy.length===0) return;
+    let yMin = 0; let yMax = Math.max(...yy); if(yMax<=0) yMax=1;
+
+    // FIXED x-axis: 0..Tmax
+    const xn = (tval)=> x0 + (x1-x0) * (tval/Tmax);
+    const yn = v => y0 - (y0-y1) * (v/(yMax));
+
+    // axes
+    ctxH.strokeStyle = '#243246'; ctxH.lineWidth=1;
+    ctxH.beginPath(); ctxH.moveTo(x0,y1); ctxH.lineTo(x0,y0); ctxH.lineTo(x1,y0); ctxH.stroke();
+
+    function drawLine(arr, color){
+      ctxH.strokeStyle=color; ctxH.beginPath();
+      arr.forEach((v,i)=>{ const x=xn(hist.T[i]); const y=yn(v); if(i===0) ctxH.moveTo(x,y); else ctxH.lineTo(x,y); });
+      ctxH.stroke();
+    }
+    drawLine(hist.D_std,'#5bd6ff'); drawLine(hist.D_dsr,'#7effa9');
+    ctxH.setLineDash([6,4]); drawLine(hist.E_std,'#3fb8dd'); drawLine(hist.E_dsr,'#59dd93'); ctxH.setLineDash([]);
+
+    // legend
+    ctxH.fillStyle = '#9fb3c8'; ctxH.fillText('D (Std)', x1-120, y1+14); ctxH.fillStyle='#5bd6ff'; ctxH.fillRect(x1-145,y1+6,10,3);
+    ctxH.fillStyle = '#9fb3c8'; ctxH.fillText('D (DSR)', x1-60, y1+14); ctxH.fillStyle='#7effa9'; ctxH.fillRect(x1-85,y1+6,10,3);
+    ctxH.fillStyle = '#9fb3c8'; ctxH.fillText('E (Std)', x1-120, y1+30); ctxH.fillStyle='#3fb8dd'; ctxH.fillRect(x1-145,y1+22,10,3);
+    ctxH.fillStyle = '#9fb3c8'; ctxH.fillText('E (DSR)', x1-60, y1+30); ctxH.fillStyle='#59dd93'; ctxH.fillRect(x1-85,y1+22,10,3);
+  }
+
+
+  function drawTimeSeries(){
+    const w=canvasTime.width, h=canvasTime.height; ctxT.clearRect(0,0,w,h);
+    const x0=40, x1=w-10, y0=h-30, y1=20;
+    if(hist.T.length<2) return;
+
+    // vertical range across trajectories + desired
+    let yMin=Infinity,yMax=-Infinity;
+    hist.Y_std.forEach(arr=>arr.forEach(v=>{ if(v<yMin) yMin=v; if(v>yMax) yMax=v; }));
+    hist.Y_dsr.forEach(arr=>arr.forEach(v=>{ if(v<yMin) yMin=v; if(v>yMax) yMax=v; }));
+    hist.Yd.forEach(v=>{ if(v<yMin) yMin=v; if(v>yMax) yMax=v; });
+    if(yMax<=yMin) yMax=yMin+1;
+
+    // FIXED x-axis: 0..Tmax
+    const xn = (tval)=> x0 + (x1-x0) * (tval/Tmax);
+    const yn = v => y0 - (y0-y1) * ((v-yMin)/(yMax-yMin));
+
+    // axes
+    ctxT.strokeStyle='#243246'; ctxT.beginPath(); ctxT.moveTo(x0,y1); ctxT.lineTo(x0,y0); ctxT.lineTo(x1,y0); ctxT.stroke();
+
+    // desired
+    ctxT.strokeStyle='#6b7280'; ctxT.setLineDash([4,4]); ctxT.beginPath();
+    hist.Yd.forEach((v,i)=>{ const x=xn(hist.T[i]); const y=yn(v); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); });
+    ctxT.stroke(); ctxT.setLineDash([]);
+
+    // agents
+    ctxT.globalAlpha = 0.35; ctxT.lineWidth = 1;
+    for(let j=0;j<N;j++){
+      ctxT.strokeStyle = '#5bd6ff';
+      ctxT.beginPath(); hist.Y_std.forEach((arr,i)=>{ const x=xn(hist.T[i]), y=yn(arr[j]); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
+      ctxT.strokeStyle = '#7effa9';
+      ctxT.beginPath(); hist.Y_dsr.forEach((arr,i)=>{ const x=xn(hist.T[i]), y=yn(arr[j]); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
+    }
+    ctxT.globalAlpha = 1;
+
+    // mean trajectories
+    ctxT.lineWidth = 2.2;
+    ctxT.strokeStyle = '#1e90ff'; ctxT.beginPath();
+    hist.Y_std.forEach((arr,i)=>{ const avg = arr.reduce((a,b)=>a+b,0)/arr.length; const x=xn(hist.T[i]), y=yn(avg); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
+    ctxT.strokeStyle = '#00c878'; ctxT.beginPath();
+    hist.Y_dsr.forEach((arr,i)=>{ const avg = arr.reduce((a,b)=>a+b,0)/arr.length; const x=xn(hist.T[i]), y=yn(avg); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
+  }
+
+  function syncLabels(){
+    // update shown slider numbers if spans exist
+    if(stiffV) stiffV.textContent=fmt(parseFloat(stiffEl.value),2);
+    if(kpinV) kpinV.textContent=fmt(parseFloat(kpinEl.value),1);
+    if(dtV) dtV.textContent=fmt(parseFloat(dtEl.value),3);
+    if(gammaV) gammaV.textContent=fmt(parseFloat(gammaEl.value),2);
+    if(alphaV) alphaV.textContent=fmt(parseFloat(alphaEl.value),2);
+    if(betaV) betaV.textContent=fmt(parseFloat(betaEl.value),3);
+    if(ydAV) ydAV.textContent=fmt(parseFloat(ydAEl.value),2);
+    if(ydFV) ydFV.textContent=fmt(parseFloat(ydFEl.value),2);
+    if(y0V) y0V.textContent=fmt(parseFloat(y0El.value),2);
+  }
+
+  function rebuild(){
+    // read inputs
+    N = Math.max(2, Math.min(200, parseInt(nEl.value,10) || 20));
+    topo = topoEl.value;
+    s = parseFloat(stiffEl.value);
+    kp = parseFloat(kpinEl.value);
+    L = Math.min(N, Math.max(1, parseInt(leadersEl.value,10) || 1));
+    dt = Math.max(1e-6, parseFloat(dtEl.value));
+    gamma = parseFloat(gammaEl.value);
+    alpha = parseFloat(alphaEl.value);
+    beta = parseFloat(betaEl.value);
+    y0 = parseFloat(y0El.value);
+    ydType = ydTypeEl.value; ydA = parseFloat(ydAEl.value); ydF = parseFloat(ydFEl.value);
+    Tmax = Math.max(0.001, parseFloat(tmaxEl.value) || 10);
+
+    // build matrices etc
+    buildKB();
+
+    // compute fixed y-axis range based on expected desired amplitude over [0, Tmax]
+    const expectedMax = expectedMaxDesired();
+    const base = Math.max(Math.abs(y0), expectedMax, 0.5);
+    const padFactor = 1.2;
+    const ySpan = base * padFactor * 2; // symmetric around zero
+    yAxisMin = -Math.abs(ySpan)/2;
+    yAxisMax = Math.abs(ySpan)/2;
+
+    resetStates();
+    stabilityStatus();
+    drawAgents(desired(0));
+    drawHistory();
+    drawTimeSeries();
+  }
+
+  function loop(){
+    if(!running) return;
+    if(t >= Tmax){ running = false; return; } // stop at Tmax
+    stepOnce();
+    if(running) requestAnimationFrame(loop);
+  }
+
+  // Listeners
+  [nEl, topoEl, stiffEl, kpinEl, leadersEl, dtEl, gammaEl, alphaEl, betaEl, ydTypeEl, ydAEl, ydFEl, y0El, tmaxEl].forEach(inp=>{
+    inp.addEventListener('input', ()=>{ syncLabels(); /*recompute layout/scale when inputs change*/ rebuild(); });
+  });
+
+  el('run').onclick=()=>{ if(!running){ running=true; requestAnimationFrame(loop); } };
+  el('pause').onclick=()=>{ running=false; };
+  el('reset').onclick=()=>{ running=false; rebuild(); };
+  el('randomize').onclick=()=>{ Y_std = Array(N).fill(0).map(()=> (Math.random()-0.5)*0.5 ); Y_dsr=Y_std.slice(); Yprev_dsr=Y_std.slice(); step=0; t=0; hist={D_std:[],D_dsr:[],E_std:[],E_dsr:[],T:[],Y_std:[],Y_dsr:[],Yd:[]}; drawAgents(desired(0)); drawHistory(); drawTimeSeries(); };
+
+  // Init
+  syncLabels(); rebuild();
+})();
+</script>
+</body>
+</html>
