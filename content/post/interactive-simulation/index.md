@@ -1,11 +1,11 @@
 ---
-title: "Interactive Simulation: Standard vs DSR (Pinned Laplacian Tracking)"
+title: "Interactive Simulation: Standard vs DSR"
 date: 2023-08-24
-description: "Interactive simulation comparing Standard and DSR methods for pinned Laplacian tracking"
+description: "Interactive simulation comparing Standard and DSR methods for Multi-Robot Systems"
 draft: false
 ---
 
-This interactive simulation allows you to explore and compare the Standard and DSR (Dynamic Surface Reset) methods for pinned Laplacian tracking. The simulation is based on models from Gombo, Tiwari, Devasia (arXiv:2102.09056).
+This interactive simulation allows you to explore and compare the Standard and DSR (Delayed-Self-Reinforcement) methods for multi-robotic systems. The simulation is based on models from Gombo, Tiwari, Devasia (arXiv:2102.09056).
 
 {{< rawhtml >}}
 <iframe src="/sim.html" style="width:100%; height:1200px; border:none; border-radius:12px; background:#0b0f14;"></iframe>
