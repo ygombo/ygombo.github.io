@@ -20,7 +20,7 @@ main:
     url: /experience/
     weight: 20
   - name: Simulation
-    url: /posts/interactive-simulation/
+    url: /post/interactive-simulation/
     weight: 30  # Adjust this number based on where you want it to appear in the menu
   # - name: Projects
   #   url: projects/
