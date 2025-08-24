@@ -19,7 +19,7 @@ main:
   - name: Experience
     url: /experience/
     weight: 20
-  - name: Simulation
+  - name: DSR Simulation
     url: /simulation/dsr/
     weight: 30
   # - name: Projects

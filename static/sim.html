@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Simulation: Standard vs DSR (Pinned Laplacian Tracking)</title>
+<title>Interactive Simulation: Standard vs Delayed-Self-Reinforcement (Object Transport using Robot Networks)</title>
 <style>
   :root{
     --bg:#0b0f14;--panel:#111823;--ink:#e6eef8;--muted:#9fb3c8;--accent:#5bd6ff;--accent2:#7effa9;--warn:#ffb86b;--bad:#ff6b6b;
@@ -37,8 +37,8 @@
 </head>
 <body>
 <header>
-  <h1>Interactive Simulation — Standard vs DSR (Pinned Laplacian Tracking)</h1>
-  <div class="note">Models from Gombo, Tiwari, Devasia (arXiv:2102.09056). Update laws:<br>
+  <h1>Interactive Simulation — Standard vs DSR (Object Transport using Robot Networks)</h1>
+  <div class="note">Models from Gombo, Tiwari, Devasia (ACC2021 Paper). Update laws:<br>
     <span class="pill">Standard</span> Y[m+1] = (I − γ δt K) Y[m] + γ δt B y<sub>d</sub>[m]
     &nbsp; | &nbsp;
     <span class="pill">DSR</span> Y[m+1] = Y[m] − αβ δt K Y[m] + αβ δt B y<sub>d</sub>[m] + [I − βK](Y[m] − Y[m−1])
