@@ -1,7 +1,7 @@
 ---
-title: 'Projects'
+title: Projects
 date: 2024-05-19
-type: landing
+type: page
 
 design:
   # Section spacing

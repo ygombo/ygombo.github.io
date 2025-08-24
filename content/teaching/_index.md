@@ -1,7 +1,7 @@
 ---
 title: Teaching
 summary: My courses
-type: landing
+type: page
 
 cascade:
   - _target:
