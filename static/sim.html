@@ -159,7 +159,7 @@
 
   const histLen = 2000;
   let hist = {D_std:[], D_dsr:[], E_std:[], E_dsr:[], T:[], Y_std:[], Y_dsr:[], Yd:[]};
-  let best = {D_std: -Infinity, D_dsr: -Infinity, E_std: -Infinity, E_dsr: -Infinity};
+  let best = {D_std: -Infinity, D_dsr: -Infinity, E_std: Infinity, E_dsr: Infinity};
 
   // Fixed y-axis range for figure 1 (computed at rebuild and kept constant while sim runs)
   let yAxisMin = -1, yAxisMax = 1;
@@ -290,8 +290,8 @@
 
     best.D_std = Math.max(best.D_std, D_std);
     best.D_dsr = Math.max(best.D_dsr, D_dsr);
-    best.E_std = Math.max(best.E_std, E_std);
-    best.E_dsr = Math.max(best.E_dsr, E_dsr);
+    best.E_std = Math.min(best.E_std, E_std);
+    best.E_dsr = Math.min(best.E_dsr, E_dsr);
 
     // Settling time estimate when both methods within epsilon for 1s
     const eps = 0.02 * (ydType==='step'? ydA : (ydType==='ramp'? Math.max(ydA*dt*step, 1) : Math.max(ydA,1)));
@@ -306,7 +306,7 @@
     settleEl.innerHTML = `Std: ${tsStd} &nbsp; | &nbsp; DSR: ${tsDsr}`;
 
     defMetricEl.innerHTML = `Std max: ${fmt(best.D_std,3)} &nbsp; | &nbsp; DSR max: ${fmt(best.D_dsr,3)}`;
-    trackMetricEl.innerHTML = `Std max: ${fmt(best.E_std,3)} &nbsp; | &nbsp; DSR max: ${fmt(best.E_dsr,3)}`;
+    trackMetricEl.innerHTML = `Std min: ${fmt(best.E_std,3)} &nbsp; | &nbsp; DSR min: ${fmt(best.E_dsr,3)}`;
 
     // Draw
     drawAgents(yd);
