@@ -38,7 +38,7 @@
 <body>
 <header>
   <h1>Interactive Simulation — Standard vs DSR (Object Transport using Robot Networks)</h1>
-  <div class="note">How to run: Use the sliders and dropdowns on the left to adjust parameters in real-time. Press ▶ Run to start, ⏸ Pause to stop, and ↺ Reset to restart. No installation needed.The simulation runs until the configured Tmax time and then stops automatically.</div>
+  <div class="note">How to run: Use the sliders and dropdowns on the left to adjust parameters in real-time. Press ▶ Run to start, ⏸ Pause to stop, and ↺ Reset to restart.</div>
   <div class="note">Models from Gombo, Tiwari, Devasia (ACC2021 Paper). Update laws:<br>
     <span class="pill">Standard</span> Y[m+1] = (I − γ δt K) Y[m] + γ δt B y<sub>d</sub>[m]
     &nbsp; | &nbsp;
@@ -475,26 +475,26 @@
     drawTimeSeries();
   }
 
-  // function loop(){
-  //   if(!running) return;
-  //   if(t >= Tmax){ running = false; return; } // stop at Tmax
-  //   stepOnce();
-  //   if(running) requestAnimationFrame(loop);
-  // }
-
   function loop(){
     if(!running) return;
-    if(t < Tmax){
-      stepOnce();
-      requestAnimationFrame(loop);
-    } else {
-      running=false;
-      // After simulation stops, display max deformation values
-      const maxDstd = Math.max(...hist.D_std);
-      const maxDdsr = Math.max(...hist.D_dsr);
-      defMetricEl.innerHTML = `Std max: ${fmt(maxDstd,3)} &nbsp; | &nbsp; DSR max: ${fmt(maxDdsr,3)}`;
-    }
+    if(t >= Tmax){ running = false; return; } // stop at Tmax
+    stepOnce();
+    if(running) requestAnimationFrame(loop);
   }
+
+  // function loop(){
+  //   if(!running) return;
+  //   if(t < Tmax){
+  //     stepOnce();
+  //     requestAnimationFrame(loop);
+  //   } else {
+  //     running=false;
+  //     // After simulation stops, display max deformation values
+  //     const maxDstd = Math.max(...hist.D_std);
+  //     const maxDdsr = Math.max(...hist.D_dsr);
+  //     defMetricEl.innerHTML = `Std max: ${fmt(maxDstd,3)} &nbsp; | &nbsp; DSR max: ${fmt(maxDdsr,3)}`;
+  //   }
+  // }
 
   
 
