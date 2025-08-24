@@ -300,10 +300,8 @@
     if (hist.E_std.length>=windowSteps){
       const okStd = hist.E_std.slice(-windowSteps).every(v=>v<=eps);
       const okDsr = hist.E_dsr.slice(-windowSteps).every(v=>v<=eps);
-      // if (okStd) tsStd = (t).toFixed(2)+' s';
-      // if (okDsr) tsDsr = (t).toFixed(2)+' s';
-      if (okStd && tsStd==='—') tsStd = (t).toFixed(2)+' s';
-      if (okDsr && tsDsr==='—') tsDsr = (t).toFixed(2)+' s';
+      if (okStd) tsStd = (t).toFixed(2)+' s';
+      if (okDsr) tsDsr = (t).toFixed(2)+' s';
     }
     settleEl.innerHTML = `Std: ${tsStd} &nbsp; | &nbsp; DSR: ${tsDsr}`;
 
