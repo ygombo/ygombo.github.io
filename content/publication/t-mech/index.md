@@ -28,8 +28,10 @@ abstract: Bio-inspired decentralized approaches for transporting objects with ro
 # Summary. An optional shortened abstract.
 # summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum.
 
-tags:
-- Networked robots
+# tags:
+# - Networked robots
+tags: ["Networked robots"]
+categories: ["journal"]
 
 featured: true
 

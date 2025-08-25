@@ -1,6 +1,8 @@
 ---
 title: Publications
 cms_exclude: true
+tags: ["dummy"]
+categories: ["misc"]
 
 # View.
 view: citation

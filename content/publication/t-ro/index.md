@@ -36,8 +36,10 @@ abstract: Recent works have investigated bio-inspired strategies to transport ob
 # Summary. An optional shortened abstract.
 # summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum.
 
-tags:
-  - Networked robots
+# tags:
+#   - Networked robots
+tags: ["Networked robots"]
+categories: ["journal"]
 
 # Display this page in the Featured widget?
 featured: true
