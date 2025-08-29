@@ -1,7 +1,6 @@
 ---
 title: "Ekskul Podcast"
 date: 2025-08-30
-type: landing
 ---
 
 ## Ekskul Podcast
