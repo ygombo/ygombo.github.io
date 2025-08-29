@@ -1,6 +1,7 @@
 ---
 title: Ekskul Podcast
 type: page
+layout: page
 date: 2025-08-30
 ---
 
