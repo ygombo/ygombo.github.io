@@ -27,4 +27,4 @@ main:
   #   weight: 30
   - name: Ekskul Podcast
     url: /podcast/
-    weight: 40
+    weight: 35
