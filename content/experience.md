@@ -16,7 +16,7 @@ sections:
     design:
       # Hugo date format
       date_format: 'January 2006'
-      # Education or Experience section first?
+      # Education or Experience section first? as
       is_education_first: false
   - block: resume-skills
     content:
