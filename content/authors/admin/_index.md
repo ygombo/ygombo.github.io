@@ -229,4 +229,4 @@ Hi there! I am Yoshua, a robotics enthusiast and an engineer by training. I earn
 
 Currently, I'm building [Konstruksi.AI](https://konstruksi.ai/), a technology startup dedicated to providing AI-based solutions for real-time project monitoring in the construction industry. 
 
-In my free time, I'm also hosting the Ekskul [Podcast](https://www.youtube.com/@ygombo/podcasts), a podcast platform aimed at sharing the stories and experiences of Papuan scholars and students, allowing listeners to gain insight and inspiration from their journeys. It also serves as a space to capture the aspirations and paths of Papuan youth in their efforts to return and contribute to Papua and Indonesia.
+In my free time, I'm also hosting the [Ekskul Podcast](https://www.youtube.com/@ygombo/podcasts), a podcast platform aimed at sharing the stories and experiences of Papuan scholars and students, allowing listeners to gain insight and inspiration from their journeys. It also serves as a space to capture the aspirations and paths of Papuan youth in their efforts to return and contribute to Papua and Indonesia.
