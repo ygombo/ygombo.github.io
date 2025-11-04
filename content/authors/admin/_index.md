@@ -227,6 +227,6 @@ awards:
 
 Hi there! I am Yoshua, a robotics enthusiast and an engineer by training. I earned my Ph.D. in Mechanical Engineering, specializing in robotics and controls, from the [University of Washington](https://www.washington.edu/) in Seattle, WA USA. My doctoral research was conducted under the guidance of Professor [Santosh Devasia](https://faculty.washington.edu/devasia/) in the Precision Controls Laboratory. My research interests lie in the control of multi-robot teams, robotics applications in manufacturing and machine learning. My long-term vision is to foster seamless collaboration between humans and robots.
 
-Currently, I'm building [Konstruksi.AI](https://konstruksi.ai/), a technology startup dedicated to providing AI-based solutions for real-time project monitoring in the construction industry. 
+Currently, I'm building [Konstruksi.AI](https://konstruksi.ai/), a technology startup dedicated to providing AI-based solutions for real-time project monitoring tailored to the construction industry. 
 
 In my free time, I'm also hosting the [Ekskul Podcast](https://www.youtube.com/@ygombo/podcasts), a podcast platform aimed at sharing the stories and experiences of Papuan scholars and students, allowing listeners to gain insight and inspiration from their journeys. It also serves as a space to capture the aspirations and paths of Papuan youth in their efforts to return and contribute to Papua and Indonesia.
