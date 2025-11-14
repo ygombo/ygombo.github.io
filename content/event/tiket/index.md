@@ -2,7 +2,7 @@
 title: Adapt or disappear: Future-proof Your Business with AI
 
 event: AI Talk organized by UWAIN
-event_url: ""
+event_url: 
 
 location: tiketdotcom HQ
 address:
