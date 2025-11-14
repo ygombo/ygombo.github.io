@@ -2,7 +2,7 @@
 title: Enabling Precision Agriculture
 
 event: Pekan Budaya - Sekolah Anak Indonesia
-event_url: 
+event_url: ""
 
 location: Kampus Sekolah Anak Indonesia
 address:
