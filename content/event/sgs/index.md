@@ -1,5 +1,5 @@
 ---
-title: AI and the Future of Learning: Opportunities, Ethics, and Challenges
+title: AI and the Future of Learning - Opportunities, Ethics, and Challenges
 
 event: Webinar - STella Gracia School
 event_url: 
