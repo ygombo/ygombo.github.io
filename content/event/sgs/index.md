@@ -1,5 +1,5 @@
 ---
-title: AI and the Future of Learning - Opportunities, Ethics, and Challenges
+title: AI and the Future of Learning (Opportunities, Ethics, and Challenges)
 
 event: Webinar - STella Gracia School
 event_url: 
@@ -13,7 +13,7 @@ address:
   country: Indonesia
 
 summary: "I shared about the roles of AI in education."
-abstract: "In this session, I shared insights on how to use AI ethically, to improve the quality of learning and education in Stella Gracia School, Lombok. The main talking point was to use AI as a tool to personalized the learning, not to cheat, not to replace it. "
+abstract: "In this session, I shared insights on how to use AI ethically, to improve the quality of learning and education in Stella Gracia School, Lombok. The main talking point was to use AI as a tool to personalized the learning, not to cheat, not to replace it."
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
