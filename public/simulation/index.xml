@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Simulations | Yoshua Gombo - Portfolio</title>
+    <link>http://localhost:1313/simulation/</link>
+      <atom:link href="http://localhost:1313/simulation/index.xml" rel="self" type="application/rss+xml" />
+    <description>Simulations</description>
+    <generator>Hugo Blox Builder (https://hugoblox.com)</generator><language>en-us</language><lastBuildDate>Thu, 24 Aug 2023 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>http://localhost:1313/media/icon_hu3aa62e6909caecb7a9b15233dc9fca24_16382_512x512_fill_lanczos_center_3.png</url>
+      <title>Simulations</title>
+      <link>http://localhost:1313/simulation/</link>
+    </image>
+    
+    <item>
+      <title>Standard vs DSR Simulation</title>
+      <link>http://localhost:1313/simulation/dsr/</link>
+      <pubDate>Thu, 24 Aug 2023 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/simulation/dsr/</guid>
+      <description>&lt;iframe
+  src=&#34;http://localhost:1313/sim.html&#34;
+  title=&#34;Standard vs DSR interactive simulation&#34;
+  style=&#34;width:100%; min-height:1450px; border:0; display:block; overflow:hidden;&#34;
+&gt;&lt;/iframe&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

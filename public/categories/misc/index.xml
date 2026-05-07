@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Misc | Yoshua Gombo - Portfolio</title>
+    <link>http://localhost:1313/categories/misc/</link>
+      <atom:link href="http://localhost:1313/categories/misc/index.xml" rel="self" type="application/rss+xml" />
+    <description>Misc</description>
+    <generator>Hugo Blox Builder (https://hugoblox.com)</generator><language>en-us</language><lastBuildDate>Thu, 30 Apr 2026 08:00:00 +0000</lastBuildDate>
+    <image>
+      <url>http://localhost:1313/media/icon_hu3aa62e6909caecb7a9b15233dc9fca24_16382_512x512_fill_lanczos_center_3.png</url>
+      <title>Misc</title>
+      <link>http://localhost:1313/categories/misc/</link>
+    </image>
+    
+    <item>
+      <title>Recent &amp; Upcoming Talks</title>
+      <link>http://localhost:1313/event/</link>
+      <pubDate>Thu, 30 Apr 2026 08:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/event/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Publications</title>
+      <link>http://localhost:1313/publication/</link>
+      <pubDate>Sun, 01 Dec 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/publication/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

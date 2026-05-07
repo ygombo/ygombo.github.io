@@ -6,47 +6,60 @@
 <title>Interactive Simulation: Standard vs Delayed-Self-Reinforcement (Object Transport using Robot Networks)</title>
 <style>
   :root{
-    --bg:#0b0f14;--panel:#111823;--ink:#e6eef8;--muted:#9fb3c8;--accent:#5bd6ff;--accent2:#7effa9;--warn:#ffb86b;--bad:#ff6b6b;
+    --bg:#171717;--panel:transparent;--panel-soft:#171717;--ink:#e8e8e8;--muted:#a3a3a3;--line:#333333;--accent:#d4d4d4;--accent2:#8fd6ad;--accent-soft:#2a2a2a;--warn:#f5b35b;--bad:#ff8a8a;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-  header{padding:18px 20px;border-bottom:1px solid #1b2330;background:linear-gradient(180deg,#0d1420,#0a0f16)}
-  h1{margin:0;font-size:18px;letter-spacing:.2px}
-  .container{display:grid;grid-template-columns: 330px 1fr;gap:14px;padding:14px}
-  .card{background:var(--panel);border:1px solid #1b2330;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-  .panel{padding:14px}
-  .controls{display:grid;gap:10px}
-  .row{display:grid;grid-template-columns: 1fr auto;gap:10px;align-items:center}
-  .row label{color:var(--muted);font-size:12px}
-  input[type=range]{width:100%}
-  input[type=number], select{width:100%;background:#0c1118;color:var(--ink);border:1px solid #1f2a3a;border-radius:10px;padding:8px}
-  .btns{display:flex;gap:8px;margin-top:8px}
-  button{background:#152132;color:var(--ink);border:1px solid #203149;border-radius:12px;padding:8px 12px;cursor:pointer}
-  button:hover{filter:brightness(1.1)}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+  header{position:relative;padding:8px 0 20px;border-bottom:1px solid var(--line);background:transparent}
+  h1{margin:0;max-width:100%;font-size:clamp(18px,2.2vw,24px);line-height:1.25;font-weight:700;letter-spacing:0;color:#f5f5f5;overflow-wrap:anywhere}
+  .container{display:grid;grid-template-columns:minmax(360px,420px) minmax(0,1fr);gap:24px;padding:20px 0 0}
+  .card{background:transparent;border:0;border-radius:0;box-shadow:none}
+  .panel{padding:0}
+  .container > .panel:first-child{border-right:1px solid var(--line);padding-right:24px}
+  .controls{display:grid;gap:14px}
+  .row{display:grid;grid-template-columns:minmax(150px,190px) minmax(0,1fr);gap:12px;align-items:center}
+  .row:has(input[type=range]){grid-template-columns:minmax(150px,190px) minmax(160px,1fr) 54px}
+  .row label{color:var(--muted);font-size:12px;font-weight:600;line-height:1.25;overflow-wrap:anywhere}
+  .row span{color:var(--ink);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  input[type=number], select{width:100%;min-width:0;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+  input[type=number]:focus, select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+  hr{width:100%;border:0;border-top:1px solid var(--line);margin:2px 0}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  button{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px 12px;cursor:pointer;font-weight:600}
+  button:hover{background:#101010;border-color:#3a3a3a}
+  button#run{background:#e5e5e5;border-color:#e5e5e5;color:#111}
+  button#run:hover{background:#f5f5f5;border-color:#f5f5f5}
   .grid{display:grid;grid-template-columns: 1fr 1fr;gap:12px}
   .metrics{display:grid;grid-template-columns: repeat(2, minmax(0,1fr));gap:10px}
-  .metric{background:#0c1118;border:1px solid #1f2a3a;border-radius:12px;padding:10px}
-  .metric h3{margin:0 0 6px 0;font-size:12px;color:var(--muted)}
-  .metric .val{font-size:18px}
-  canvas{width:100%;height:260px;background:#0a0f15;border-radius:12px;border:1px solid #1b2330}
+  .metric{background:transparent;border-top:1px solid var(--line);border-radius:0;padding:12px 0}
+  .metric h3{margin:0 0 6px 0;font-size:12px;color:var(--muted);font-weight:700}
+  .metric .val{font-size:18px;font-weight:700;color:#f5f5f5}
+  canvas{width:100%;height:260px;background:var(--bg);border-radius:0;border:1px solid var(--line)}
   .note{color:var(--muted);font-size:12px;margin-top:8px}
-  .pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#0c1118;border:1px solid #203149;color:var(--muted);font-size:11px}
+  .pill{display:inline-block;padding:3px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:#d4d4d4;font-size:11px;font-weight:700}
   .warn{color:var(--warn)}
   .bad{color:var(--bad)}
+  .paper-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;color:#d4d4d4;font-weight:600;text-decoration:none}
+  .paper-link:hover{text-decoration:underline}
+  .grid > .panel,.container > .panel:nth-child(2) > .panel{border-top:1px solid var(--line);padding-top:12px}
+  .container > .panel:nth-child(2) > .grid > .panel{border-top:0;padding-top:0}
+  h3{font-weight:700}
+  @media (max-width: 980px){
+    .container,.grid{grid-template-columns:1fr}
+    .container > .panel:first-child{border-right:0;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:16px}
+    header{padding:8px 0 18px}
+  }
+  @media (max-width: 560px){
+    .row,.row:has(input[type=range]){grid-template-columns:1fr}
+    .row span{text-align:left}
+  }
 </style>
 </head>
 <body>
 <header>
-  <a href="/" target="_top" style="position:absolute;right:20px;top:18px;background:#ffffff;color:#152132;padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid #203149;font-size:13px;">← Home</a>
   <h1>Interactive Simulation — Standard vs DSR (Object Transport using Robot Networks)</h1>
-  <div class="note">
-    <a href="https://arxiv.org/pdf/2102.09056" target="_blank" style="color:#5bd6ff;text-decoration:underline;">View ACC2021 Paper (arXiv:2102.09056)</a>
-  </div>
-  <div class="note">
-    How to run: Use the sliders and dropdowns on the left to adjust parameters in real-time.  
-    Press ▶ Run to start, ⏸ Pause to stop, and ↺ Reset to restart.  
-    The simulation runs until <b>Tmax</b> and then stops automatically. You can also pause and adjust parameters mid-simulation.
-  </div>
+  <a href="https://arxiv.org/pdf/2102.09056" target="_blank" class="paper-link">View ACC2021 Paper (arXiv:2102.09056)</a>
   <div class="note">Models from Gombo, Tiwari, Devasia (ACC2021 Paper). Update laws:<br>
     <span class="pill">Standard</span> Y[m+1] = (I − γ δt K) Y[m] + γ δt B y<sub>d</sub>[m]
     &nbsp; | &nbsp;
@@ -84,7 +97,6 @@
       <div class="row"><label>Step amplitude / Ramp rate / Sine amp</label><input id="ydA" type="range" min="0" max="5" step="0.05" value="1"><span id="ydA_v">1.00</span></div>
       <div class="row"><label>Sine frequency (Hz)</label><input id="ydF" type="range" min="0" max="2" step="0.01" value="0.20"><span id="ydF_v">0.20</span></div>
 
-      <!-- NEW: Simulation time control -->
       <div class="row"><label>Simulation time (s)</label><input id="tmax" type="number" min="0.1" max="1000" step="0.1" value="10"></div>
 
       <div class="btns">
@@ -102,8 +114,7 @@
         <h3 style="margin:0 0 8px 0;color:var(--muted)">Agent States (index vs y)</h3>
         <!-- keep same canvas attributes so layout unchanged -->
         <canvas id="canvasAgents" width="900" height="260"></canvas>
-        <div class="note">Blue: Standard • Green: DSR • Grey line shows desired y<sub>d</sub> (scalar) </div>
-        <div class="note">Y-axis fixed using computed bounds based on inputs (so it won't autoscale each frame).</div>
+        <div class="note">Red: Standard • Blue: DSR • Grey line shows desired y<sub>d</sub></div>
       </div>
       <div class="card panel">
         <h3 style="margin:0 0 8px 0;color:var(--muted)">Deformation & Tracking (history)</h3>
@@ -139,6 +150,17 @@
   const stiffV = el('stiff_v'), kpinV = el('kpin_v'), dtV = el('dt_v'), gammaV = el('gamma_v'), alphaV = el('alpha_v'), betaV = el('beta_v'), ydAV = el('ydA_v'), ydFV = el('ydF_v'), y0V = el('y0_v');
   const lamMaxEl = el('lamMax'), stdStableEl = el('stdStable'), dsrBoundEl = el('dsrBound'), stabilityNote = el('stabilityNote');
   const defMetricEl = el('defMetric'), trackMetricEl = el('trackMetric'), settleEl = el('settle');
+  const colors = {
+    axis: '#333333',
+    text: '#a3a3a3',
+    desired: '#737373',
+    std: '#ef4444',
+    stdSoft: '#ef444488',
+    dsr: '#3b82f6',
+    dsrSoft: '#3b82f688',
+    stdErr: '#f87171',
+    dsrErr: '#60a5fa'
+  };
 
   function fmt(x, d=3){ return (Math.abs(x) < 1e-12 ? 0 : x).toFixed(d); }
 
@@ -324,7 +346,7 @@
   function drawAgents(yd){
     const w = canvasAgents.width, h = canvasAgents.height; ctxA.clearRect(0,0,w,h);
     // Axes
-    ctxA.globalAlpha = 1; ctxA.lineWidth=1; ctxA.strokeStyle = '#243246';
+    ctxA.globalAlpha = 1; ctxA.lineWidth=1; ctxA.strokeStyle = colors.axis;
     ctxA.beginPath(); ctxA.moveTo(40, h-30); ctxA.lineTo(w-10, h-30); ctxA.stroke(); // x-axis
     ctxA.beginPath(); ctxA.moveTo(40, 10); ctxA.lineTo(40, h-30); ctxA.stroke(); // y-axis
 
@@ -336,7 +358,7 @@
     const yn = y=> y0 - (y0-y1)*((y - yMin)/(yMax - yMin));
 
     // draw y ticks (5 ticks)
-    ctxA.fillStyle = '#9fb3c8'; ctxA.font = '11px system-ui';
+    ctxA.fillStyle = colors.text; ctxA.font = '11px system-ui';
     for(let k=0;k<=4;k++){
       const val = yMin + (yMax-yMin)*(k/4);
       const yPos = yn(val);
@@ -345,20 +367,20 @@
     }
 
     // Desired line
-    ctxA.strokeStyle = '#6b7280'; ctxA.setLineDash([4,4]); ctxA.beginPath(); ctxA.moveTo(x0, yn(yd)); ctxA.lineTo(x1, yn(yd)); ctxA.stroke(); ctxA.setLineDash([]);
+    ctxA.strokeStyle = colors.desired; ctxA.setLineDash([4,4]); ctxA.beginPath(); ctxA.moveTo(x0, yn(yd)); ctxA.lineTo(x1, yn(yd)); ctxA.stroke(); ctxA.setLineDash([]);
 
     // Standard (blue)
-    ctxA.fillStyle = '#5bd6ff';
+    ctxA.fillStyle = colors.std;
     for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_std[i]); ctxA.beginPath(); ctxA.arc(x,y,3,0,Math.PI*2); ctxA.fill(); }
-    ctxA.strokeStyle = '#5bd6ff88'; ctxA.beginPath(); for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_std[i]); if(i===0) ctxA.moveTo(x,y); else ctxA.lineTo(x,y);} ctxA.stroke();
+    ctxA.strokeStyle = colors.stdSoft; ctxA.beginPath(); for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_std[i]); if(i===0) ctxA.moveTo(x,y); else ctxA.lineTo(x,y);} ctxA.stroke();
 
     // DSR (green)
-    ctxA.fillStyle = '#7effa9';
+    ctxA.fillStyle = colors.dsr;
     for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_dsr[i]); ctxA.beginPath(); ctxA.arc(x,y,3,0,Math.PI*2); ctxA.fill(); }
-    ctxA.strokeStyle = '#7effa988'; ctxA.beginPath(); for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_dsr[i]); if(i===0) ctxA.moveTo(x,y); else ctxA.lineTo(x,y);} ctxA.stroke();
+    ctxA.strokeStyle = colors.dsrSoft; ctxA.beginPath(); for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_dsr[i]); if(i===0) ctxA.moveTo(x,y); else ctxA.lineTo(x,y);} ctxA.stroke();
 
     // Labels
-    ctxA.fillStyle = '#9fb3c8'; ctxA.fillText('Index', (x0+x1)/2-15, h-10); ctxA.save(); ctxA.translate(12,(y0+y1)/2); ctxA.rotate(-Math.PI/2); ctxA.fillText('y', 0,0); ctxA.restore();
+    ctxA.fillStyle = colors.text; ctxA.fillText('Index', (x0+x1)/2-15, h-10); ctxA.save(); ctxA.translate(12,(y0+y1)/2); ctxA.rotate(-Math.PI/2); ctxA.fillText('y', 0,0); ctxA.restore();
   }
 
   function drawHistory(){
@@ -376,7 +398,7 @@
     const yn = v => y0 - (y0-y1) * (v/(yMax));
 
     // axes
-    ctxH.strokeStyle = '#243246'; ctxH.lineWidth=1;
+    ctxH.strokeStyle = colors.axis; ctxH.lineWidth=1;
     ctxH.beginPath(); ctxH.moveTo(x0,y1); ctxH.lineTo(x0,y0); ctxH.lineTo(x1,y0); ctxH.stroke();
 
     function drawLine(arr, color){
@@ -384,14 +406,14 @@
       arr.forEach((v,i)=>{ const x=xn(hist.T[i]); const y=yn(v); if(i===0) ctxH.moveTo(x,y); else ctxH.lineTo(x,y); });
       ctxH.stroke();
     }
-    drawLine(hist.D_std,'#5bd6ff'); drawLine(hist.D_dsr,'#7effa9');
-    ctxH.setLineDash([6,4]); drawLine(hist.E_std,'#3fb8dd'); drawLine(hist.E_dsr,'#59dd93'); ctxH.setLineDash([]);
+    drawLine(hist.D_std,colors.std); drawLine(hist.D_dsr,colors.dsr);
+    ctxH.setLineDash([6,4]); drawLine(hist.E_std,colors.stdErr); drawLine(hist.E_dsr,colors.dsrErr); ctxH.setLineDash([]);
 
     // legend
-    ctxH.fillStyle = '#9fb3c8'; ctxH.fillText('D (Std)', x1-120, y1+14); ctxH.fillStyle='#5bd6ff'; ctxH.fillRect(x1-145,y1+6,10,3);
-    ctxH.fillStyle = '#9fb3c8'; ctxH.fillText('D (DSR)', x1-60, y1+14); ctxH.fillStyle='#7effa9'; ctxH.fillRect(x1-85,y1+6,10,3);
-    ctxH.fillStyle = '#9fb3c8'; ctxH.fillText('E (Std)', x1-120, y1+30); ctxH.fillStyle='#3fb8dd'; ctxH.fillRect(x1-145,y1+22,10,3);
-    ctxH.fillStyle = '#9fb3c8'; ctxH.fillText('E (DSR)', x1-60, y1+30); ctxH.fillStyle='#59dd93'; ctxH.fillRect(x1-85,y1+22,10,3);
+    ctxH.fillStyle = colors.text; ctxH.fillText('D (Std)', x1-120, y1+14); ctxH.fillStyle=colors.std; ctxH.fillRect(x1-145,y1+6,10,3);
+    ctxH.fillStyle = colors.text; ctxH.fillText('D (DSR)', x1-60, y1+14); ctxH.fillStyle=colors.dsr; ctxH.fillRect(x1-85,y1+6,10,3);
+    ctxH.fillStyle = colors.text; ctxH.fillText('E (Std)', x1-120, y1+30); ctxH.fillStyle=colors.stdErr; ctxH.fillRect(x1-145,y1+22,10,3);
+    ctxH.fillStyle = colors.text; ctxH.fillText('E (DSR)', x1-60, y1+30); ctxH.fillStyle=colors.dsrErr; ctxH.fillRect(x1-85,y1+22,10,3);
   }
 
 
@@ -412,28 +434,28 @@
     const yn = v => y0 - (y0-y1) * ((v-yMin)/(yMax-yMin));
 
     // axes
-    ctxT.strokeStyle='#243246'; ctxT.beginPath(); ctxT.moveTo(x0,y1); ctxT.lineTo(x0,y0); ctxT.lineTo(x1,y0); ctxT.stroke();
+    ctxT.strokeStyle=colors.axis; ctxT.beginPath(); ctxT.moveTo(x0,y1); ctxT.lineTo(x0,y0); ctxT.lineTo(x1,y0); ctxT.stroke();
 
     // desired
-    ctxT.strokeStyle='#6b7280'; ctxT.setLineDash([4,4]); ctxT.beginPath();
+    ctxT.strokeStyle=colors.desired; ctxT.setLineDash([4,4]); ctxT.beginPath();
     hist.Yd.forEach((v,i)=>{ const x=xn(hist.T[i]); const y=yn(v); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); });
     ctxT.stroke(); ctxT.setLineDash([]);
 
     // agents
     ctxT.globalAlpha = 0.35; ctxT.lineWidth = 1;
     for(let j=0;j<N;j++){
-      ctxT.strokeStyle = '#5bd6ff';
+      ctxT.strokeStyle = colors.std;
       ctxT.beginPath(); hist.Y_std.forEach((arr,i)=>{ const x=xn(hist.T[i]), y=yn(arr[j]); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
-      ctxT.strokeStyle = '#7effa9';
+      ctxT.strokeStyle = colors.dsr;
       ctxT.beginPath(); hist.Y_dsr.forEach((arr,i)=>{ const x=xn(hist.T[i]), y=yn(arr[j]); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
     }
     ctxT.globalAlpha = 1;
 
     // mean trajectories
     ctxT.lineWidth = 2.2;
-    ctxT.strokeStyle = '#1e90ff'; ctxT.beginPath();
+    ctxT.strokeStyle = colors.std; ctxT.beginPath();
     hist.Y_std.forEach((arr,i)=>{ const avg = arr.reduce((a,b)=>a+b,0)/arr.length; const x=xn(hist.T[i]), y=yn(avg); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
-    ctxT.strokeStyle = '#00c878'; ctxT.beginPath();
+    ctxT.strokeStyle = colors.dsr; ctxT.beginPath();
     hist.Y_dsr.forEach((arr,i)=>{ const avg = arr.reduce((a,b)=>a+b,0)/arr.length; const x=xn(hist.T[i]), y=yn(avg); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
   }
 
