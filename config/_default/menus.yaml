@@ -22,6 +22,9 @@ main:
   - name: DSR Simulation
     url: /simulation/dsr/
     weight: 30
+  - name: Planar Simulation
+    url: /simulation/planar/
+    weight: 31
   # - name: Projects
   #   url: projects/
   #   weight: 30
