@@ -10,8 +10,10 @@
 {{ end }}
 
 <style>
-  .spk { --spk-accent: rgb(var(--color-primary-600)); --spk-deep: rgb(var(--color-primary-950)); --spk-soft: rgb(var(--color-primary-50)); --spk-ink: rgb(17 24 39); --spk-muted: rgb(75 85 99); --spk-line: rgb(var(--color-primary-200)); }
-  .dark .spk { --spk-accent: rgb(var(--color-primary-400)); --spk-deep: rgb(var(--color-primary-900)); --spk-soft: rgb(255 255 255 / 0.04); --spk-ink: rgb(243 244 246); --spk-muted: rgb(156 163 175); --spk-line: rgb(255 255 255 / 0.12); }
+  .spk { --spk-accent: rgb(31 41 55); --spk-deep: rgb(17 24 39); --spk-ink: rgb(17 24 39); --spk-muted: rgb(75 85 99); --spk-line: rgb(229 231 235); }
+  .dark .spk { --spk-accent: rgb(229 231 235); --spk-deep: rgb(31 41 55); --spk-ink: rgb(243 244 246); --spk-muted: rgb(156 163 175); --spk-line: rgb(255 255 255 / 0.12); }
+  .dark .spk .spk-main { border: 1px solid var(--spk-line); }
+  .dark .spk .spk-cta { color: rgb(17 24 39) !important; }
   .spk { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; color: var(--spk-ink); }
   .spk-head { display: flex; align-items: center; gap: 1.75rem; margin-bottom: 1.75rem; }
   .spk-photo { width: 7.5rem; height: 7.5rem; border-radius: 1.25rem; object-fit: cover; flex-shrink: 0; box-shadow: 0 0 0 4px var(--spk-line); }
@@ -47,6 +49,9 @@
 </style>
 
 <div class="spk">
+  {{ with $c.title }}
+  <div class="mb-6 text-3xl font-bold text-gray-900 dark:text-white text-center">{{ . | emojify | $page.RenderString }}</div>
+  {{ end }}
   <div class="spk-head">
     <div>
       {{ with $c.eyebrow }}<p class="spk-eyebrow">{{ . }}</p>{{ end }}

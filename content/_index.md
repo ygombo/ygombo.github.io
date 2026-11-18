@@ -34,6 +34,7 @@ sections:
     id: speaking
     content:
       username: admin
+      title: "🎤 Yoshua's Speaker Profile"
       eyebrow: Speaker · AI & Robotics
       name: Yoshua Gombo, Ph.D.
       role: Co-Founder & CTO, Konstruksi.AI
