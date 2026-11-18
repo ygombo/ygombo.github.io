@@ -1,264 +1,645 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DSR Plannar Simulation</title>
-  <style>
-    :root{color-scheme:dark;--bg:#171717;--ink:#ededed;--muted:#aaa;--line:#383838;--red:#f87171;--blue:#60a5fa}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-    h1{font-size:clamp(20px,2.5vw,28px);line-height:1.2;margin:0 0 8px}
-    h2{font-size:17px;margin:0}
-    p{margin:0;color:var(--muted)}
-    header{padding:8px 0 19px;border-bottom:1px solid var(--line)}
-    main{padding:20px 0 30px}
-    .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding-bottom:20px}
-    button{border:1px solid #777;background:#eee;color:#111;padding:8px 15px;border-radius:5px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
-    button:hover{background:#fff}
-    button.secondary{background:#242424;color:var(--ink);border-color:#555}
-    button.secondary:hover{background:#333}
-    .control{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13px}
-    .control input[type=range]{width:115px;accent-color:#ddd}
-    .control output{min-width:36px;color:var(--ink);font-variant-numeric:tabular-nums}
-    .control input[type=checkbox]{accent-color:var(--blue)}
-    .model-controls{border:1px solid var(--line);border-radius:5px;padding:14px 16px;margin-bottom:20px}
-    .model-controls h2{font-size:14px;margin:0 0 11px}
-    .control-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px 25px}
-    .model-controls .control{justify-content:space-between;min-width:0}
-    .model-controls .control input[type=range]{flex:1;min-width:55px;max-width:140px}
-    .model-controls .control output{min-width:42px;text-align:right}
-    .control-note{font-size:12px;margin-top:10px}
-    .control-note.warning{color:#f5b35b}
-    .arenas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-    .arena{min-width:0;border-top:1px solid var(--line);padding-top:12px}
-    .arena-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}
-    .metric{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;text-align:right}
-    .metric strong{font-size:19px;color:var(--ink)}
-    canvas{display:block;width:100%;aspect-ratio:4/3;border:1px solid #414141;background:#1e1e1e;border-radius:5px}
-    .arena p{font-size:12px;margin-top:8px}
-    .explain{border-top:1px solid var(--line);margin-top:22px;padding-top:16px;max-width:950px}
-    .explain p+p{margin-top:9px}
-    .swatch{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:#fbbf24}
-    @media(max-width:900px){.control-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:760px){.arenas{grid-template-columns:1fr}.toolbar{gap:12px}.arena-head{flex-wrap:wrap}}
-    @media(max-width:560px){.control-grid{grid-template-columns:1fr}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DSR Planar Simulation</title>
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#171717; --surface:#1f1f1f; --surface-2:#262626; --line:#2f2f2f; --line-2:#3a3a3a;
+    --ink:#f5f5f5; --ink-2:#d4d4d4; --muted:#a3a3a3; --faint:#737373;
+    --std:#f87171; --dsr:#60a5fa; --good:#86efac; --warn:#fbbf24; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink)}
+  body{font:15px/1.6 Inter,system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:8px 0 24px}
+  a{color:var(--ink)}
+  h1,h2,h3{margin:0;line-height:1.2}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .std{color:var(--std)} .dsr{color:var(--dsr)}
+
+  /* Hero */
+  .hero{padding:12px 0 36px;border-bottom:1px solid var(--line)}
+  .hero h1{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.02em;margin:10px 0 14px;max-width:20ch}
+  .hero p{color:var(--ink-2);font-size:17px;max-width:68ch;margin:0}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 18px;font:600 14px/1 inherit;font-family:inherit;cursor:pointer;border:1px solid var(--line-2);background:transparent;color:var(--ink);text-decoration:none;transition:background .15s,border-color .15s}
+  .btn:hover{background:var(--surface-2);border-color:#4a4a4a}
+  .btn.primary{background:var(--ink);color:#111;border-color:var(--ink)}
+  .btn.primary:hover{background:#fff}
+  .btn.sm{padding:8px 14px;font-size:13px}
+  .btn:focus-visible{outline:2px solid var(--dsr);outline-offset:2px}
+
+  /* Sections */
+  .section{padding:36px 0}
+  .section-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px;margin-bottom:18px}
+  .section-head h2{font-size:24px;font-weight:700}
+  .section-head p{margin:0;color:var(--muted);font-size:14px}
+  .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .step .n{display:inline-flex;width:28px;height:28px;border-radius:999px;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--surface-2);border:1px solid var(--line-2);margin-bottom:12px}
+  .step h3{font-size:16px;margin-bottom:6px}
+  .step p{margin:0;color:var(--muted);font-size:14px}
+  .step.s-std{border-top:3px solid var(--std)}
+  .step.s-dsr{border-top:3px solid var(--dsr)}
+
+  /* Simulator */
+  .sim{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+  .controls{padding:18px;position:sticky;top:12px}
+  .group + .group{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+  .group-title{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .field{margin-bottom:14px}
+  .field:last-child{margin-bottom:0}
+  .field-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+  .field label{font-size:13px;color:var(--ink-2);font-weight:500}
+  .field .val{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .hint{font-size:12px;color:var(--faint);margin-top:4px;line-height:1.4}
+  input[type=range]{width:100%;accent-color:var(--ink);margin:0}
+  .check{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink-2);cursor:pointer}
+  .check input{accent-color:var(--ink)}
+  details.adv summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  details.adv summary::-webkit-details-marker{display:none}
+  details.adv summary::after{content:"+";font-size:18px;font-weight:400;letter-spacing:0}
+  details.adv[open] summary::after{content:"−"}
+  details.adv[open] summary{margin-bottom:12px}
+
+  .stage{display:grid;gap:18px;min-width:0}
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .clock{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .live{display:inline-block;width:8px;height:8px;border-radius:999px;background:var(--good);margin-right:6px;vertical-align:1px}
+  .live.off{background:var(--faint)}
+  .arenas{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px}
+  .arena-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
+  .arena-head h3{font-size:15px;font-weight:600}
+  .arena-head .dv{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .arena-head .dv b{font-size:16px;color:var(--ink);font-weight:700}
+  .arena canvas{display:block;width:100%;aspect-ratio:4/3;border-radius:10px;border:1px solid var(--line)}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted);padding:0 16px 14px}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:14px;height:3px;border-radius:2px;display:inline-block}
+  .sw.dot{width:10px;height:10px;border-radius:999px}
+  .sw.ring{width:12px;height:12px;border-radius:999px;border:1.5px dashed var(--faint)}
+  .sw.dash{background:repeating-linear-gradient(90deg,var(--faint) 0 4px,transparent 4px 7px)}
+  .alert{display:none;margin:0 16px 14px;padding:10px 14px;border-radius:10px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:#fde68a;font-size:13px}
+  .alert.show{display:block}
+
+  .metrics{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px}
+  .metric{padding:16px 18px}
+  .metric h3{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px}
+  .headline{font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .headline small{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:6px}
+  .metric .sub{font-size:13px;color:var(--muted);margin-top:8px}
+  .cmp{display:grid;gap:8px}
+  .cmp-row{display:grid;grid-template-columns:62px 1fr 56px;align-items:center;gap:10px;font-size:13px}
+  .cmp-row b{font-weight:600}
+  .cmp-row .num{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+  .track{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+  .track i{display:block;height:100%;width:0;border-radius:999px}
+
+  .chart{padding:16px 16px 12px}
+  .chart h3{font-size:15px;font-weight:600;margin-bottom:2px}
+  .chart p{margin:0 0 10px;font-size:13px;color:var(--muted)}
+  .chart canvas{display:block;width:100%;height:200px}
+  .chart .legend{padding:8px 0 0}
+
+  /* Math */
+  .math{padding:20px 22px}
+  .math summary{cursor:pointer;font-weight:600;font-size:16px}
+  .eq{display:grid;gap:12px;margin-top:16px}
+  .eq-row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:baseline;padding:12px 14px;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+  .eq-row code{font:14px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--ink-2);overflow-x:auto;white-space:nowrap}
+  .tag{font-size:12px;font-weight:700}
+  .math ul{margin:16px 0 0;padding-left:18px;color:var(--muted);font-size:14px}
+  .math li{margin:4px 0}
+  .stab{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+  .stab div{padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:13px;color:var(--muted)}
+  .stab b{display:block;color:var(--ink);font-size:16px;margin-top:2px;font-variant-numeric:tabular-nums}
+  .ok{color:var(--good)!important} .bad{color:var(--std)!important}
+  .cite{margin-top:16px;font-size:13px;color:var(--faint)}
+
+  @media (max-width: 960px){
+    .sim{grid-template-columns:1fr}
+    .controls{position:static;order:2}
+    .metrics{grid-template-columns:1fr 1fr}
+    .metrics .metric:first-child{grid-column:1/-1}
+  }
+  @media (max-width: 720px){
+    .steps,.stab{grid-template-columns:1fr}
+    .arenas{grid-template-columns:1fr}
+    .hero p{font-size:16px}
+  }
+  @media (max-width: 480px){
+    .metrics{grid-template-columns:1fr}
+    .eq-row{grid-template-columns:1fr}
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>DSR Plannar Simulation</h1>
-    <p>Two robot teams carry the same circular object along one randomly wandering leader path. Watch what happens to the shape as the leader turns and bounces off the arena walls.</p>
+<div class="wrap">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="eyebrow">Interactive research demo · 2D extension</div>
+    <h1>Carrying a shape around corners with DSR</h1>
+    <p>Two identical robot teams surround a circular object and follow the same leader along a randomly wandering path. Every time the leader turns, the followers have to catch up. Watch how the <b class="std">standard</b> team squashes the object, while the <b class="dsr">DSR</b> team keeps it close to a circle.</p>
+    <div class="hero-actions">
+      <button class="btn primary" id="heroGo" type="button">↓ Watch the simulation</button>
+      <a class="btn" href="/simulation/dsr/" target="_top">See the 1D version</a>
+      <a class="btn" href="https://arxiv.org/pdf/2102.09056" target="_blank" rel="noopener">Read the paper ↗</a>
+    </div>
   </header>
-  <main>
-    <div class="toolbar" aria-label="Simulation controls">
-      <button id="toggle" type="button">Pause</button>
-      <button id="reset" type="button" class="secondary">Reset path</button>
-      <label class="control" for="speed">Leader speed <input id="speed" type="range" min="40" max="190" step="5" value="85"><output id="speedValue" for="speed">85</output></label>
-      <label class="control" for="turn">Wander <input id="turn" type="range" min="0" max="100" step="1" value="38"><output id="turnValue" for="turn">38%</output></label>
-      <label class="control" for="trails"><input id="trails" type="checkbox" checked> Trace leader path</label>
+
+  <!-- How it works -->
+  <section class="section">
+    <div class="section-head">
+      <h2>How it works</h2>
+      <p>Same robots, same path, two ways of following.</p>
     </div>
-    <section class="model-controls" aria-labelledby="modelTitle">
-      <h2 id="modelTitle">Robot network and control parameters</h2>
-      <div class="control-grid">
-        <label class="control" for="agents">Agents <input id="agents" type="range" min="6" max="40" step="1" value="8"><output id="agentsValue" for="agents">8</output></label>
-        <label class="control" for="stiffness">Neighbor stiffness <input id="stiffness" type="range" min="0.1" max="10" step="0.1" value="3"><output id="stiffnessValue" for="stiffness">3.0</output></label>
-        <label class="control" for="pin">Leader pinning <input id="pin" type="range" min="0.1" max="10" step="0.1" value="3"><output id="pinValue" for="pin">3.0</output></label>
-        <label class="control" for="gamma">γ (standard) <input id="gamma" type="range" min="0" max="5" step="0.05" value="1"><output id="gammaValue" for="gamma">1.0</output></label>
-        <label class="control" for="alpha">α (DSR) <input id="alpha" type="range" min="0.1" max="5" step="0.05" value="2"><output id="alphaValue" for="alpha">2.0</output></label>
-        <label class="control" for="beta">β (DSR) <input id="beta" type="range" min="0" max="0.14" step="any" value="0.14"><output id="betaValue" for="beta">0.140</output></label>
+    <div class="steps">
+      <div class="step">
+        <div class="n">1</div>
+        <h3>The setup</h3>
+        <p>Robots form a ring around a circular object. Only the leader is pulled toward a point moving along the path; every other robot just responds to its two neighbours.</p>
       </div>
-      <p class="control-note">Changing the agent count resets the path and both teams. Other parameters update live.</p>
-      <p class="control-note" id="stabilityNote" role="status"></p>
-    </section>
-    <div class="arenas">
-      <section class="arena" aria-labelledby="standardTitle">
-        <div class="arena-head"><h2 id="standardTitle" style="color:var(--red)">Standard approach</h2><div class="metric">Shape deformation <strong id="standardMetric">0%</strong></div></div>
-        <canvas id="standardCanvas" width="800" height="600" aria-label="Standard approach: robots around a deforming circular object"></canvas>
-        <p>Neighbor response diffuses around the team. Distant agents lag behind the leader.</p>
-      </section>
-      <section class="arena" aria-labelledby="dsrTitle">
-        <div class="arena-head"><h2 id="dsrTitle" style="color:var(--blue)">DSR approach</h2><div class="metric">Shape deformation <strong id="dsrMetric">0%</strong></div></div>
-        <canvas id="dsrCanvas" width="800" height="600" aria-label="DSR approach: robots around a nearly circular object"></canvas>
-        <p>Delayed self reinforcement uses each agent's previous motion to carry the leader's change through the team.</p>
-      </section>
+      <div class="step s-std">
+        <div class="n">2</div>
+        <h3><span class="std">Standard</span> approach</h3>
+        <p>A turn by the leader diffuses slowly around the ring. Robots far from the leader lag behind, so the object gets dragged into an oval.</p>
+      </div>
+      <div class="step s-dsr">
+        <div class="n">3</div>
+        <h3>With <span class="dsr">DSR</span></h3>
+        <p>Each robot also reuses its own previous motion. The leader's change spreads around the ring much faster, so the team turns together and the shape holds.</p>
+      </div>
     </div>
-    <div class="explain">
-      <p><span class="swatch"></span>Gold agent = leader. Dashed circle = undeformed shape at the team's current center. The target path reflects at the dashed arena border; both simulations use that same path.</p>
-      <p>This is an illustrative 2D pinned-ring model based on the update laws in the <a href="/simulation/dsr/" style="color:#b7d5ff">DSR simulation</a>. Deformation is the RMS departure of agent positions from a translated circle, divided by its radius. It does not model material forces or collisions.</p>
+  </section>
+
+  <!-- Simulator -->
+  <section class="section" id="simulator" style="padding-top:0">
+    <div class="section-head">
+      <h2>Watch it live</h2>
+      <p><b>Deformation</b> = how far the robots are from a perfect circle, as a % of its radius. Lower is better.</p>
     </div>
-  </main>
-  <script>
-  (() => {
-    'use strict';
-    const W = 800, H = 600, radius = 82, dt = 0.03;
-    const margin = 112, start = {x: W / 2, y: H / 2};
-    let N = 8, offset = [], stiffness = 3, pin = 3, gamma = 1, alpha = 2, beta = 0.14;
-    const els = {
-      standard:document.getElementById('standardCanvas'), dsr:document.getElementById('dsrCanvas'),
-      standardMetric:document.getElementById('standardMetric'), dsrMetric:document.getElementById('dsrMetric'),
-      toggle:document.getElementById('toggle'),reset:document.getElementById('reset'),
-      speed:document.getElementById('speed'),speedValue:document.getElementById('speedValue'),
-      turn:document.getElementById('turn'),turnValue:document.getElementById('turnValue'),trails:document.getElementById('trails'),
-      agents:document.getElementById('agents'),agentsValue:document.getElementById('agentsValue'),
-      stiffness:document.getElementById('stiffness'),stiffnessValue:document.getElementById('stiffnessValue'),
-      pin:document.getElementById('pin'),pinValue:document.getElementById('pinValue'),
-      gamma:document.getElementById('gamma'),gammaValue:document.getElementById('gammaValue'),
-      alpha:document.getElementById('alpha'),alphaValue:document.getElementById('alphaValue'),
-      beta:document.getElementById('beta'),betaValue:document.getElementById('betaValue'),
-      stabilityNote:document.getElementById('stabilityNote')
+
+    <div class="sim">
+      <!-- Controls -->
+      <aside class="panel controls" aria-label="Simulation settings">
+        <div class="group">
+          <div class="group-title">Leader's path</div>
+          <div class="field">
+            <div class="field-top"><label for="speed">Leader speed</label><span class="val" id="speedValue"></span></div>
+            <input id="speed" type="range" min="40" max="190" step="5" value="85">
+          </div>
+          <div class="field">
+            <div class="field-top"><label for="turn">How much it wanders</label><span class="val" id="turnValue"></span></div>
+            <input id="turn" type="range" min="0" max="100" step="1" value="38">
+            <div class="hint">Faster, twistier paths are harder to follow.</div>
+          </div>
+          <label class="check"><input id="trails" type="checkbox" checked> Show the path</label>
+        </div>
+
+        <div class="group">
+          <div class="group-title">Robot team</div>
+          <div class="field">
+            <div class="field-top"><label for="agents">Number of robots</label><span class="val" id="agentsValue"></span></div>
+            <input id="agents" type="range" min="6" max="40" step="1" value="8">
+            <div class="hint">Changing this restarts both teams.</div>
+          </div>
+          <div class="field">
+            <div class="field-top"><label for="stiffness">Neighbour stiffness</label><span class="val" id="stiffnessValue"></span></div>
+            <input id="stiffness" type="range" min="0.1" max="10" step="0.1" value="3">
+          </div>
+          <div class="field">
+            <div class="field-top"><label for="pin">Leader pull (pinning)</label><span class="val" id="pinValue"></span></div>
+            <input id="pin" type="range" min="0.1" max="10" step="0.1" value="3">
+          </div>
+        </div>
+
+        <div class="group">
+          <details class="adv">
+            <summary>Advanced gains</summary>
+            <div class="field">
+              <div class="field-top"><label for="gamma">γ — standard gain</label><span class="val" id="gammaValue"></span></div>
+              <input id="gamma" type="range" min="0.05" max="5" step="0.05" value="1">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="alpha">α — DSR gain</label><span class="val" id="alphaValue"></span></div>
+              <input id="alpha" type="range" min="0.1" max="5" step="0.05" value="2">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="beta">β — DSR reinforcement</label><span class="val" id="betaValue"></span></div>
+              <input id="beta" type="range" min="0" max="0.14" step="any" value="0.14">
+              <div class="hint">The slider's maximum tracks the DSR stability limit, so DSR can't diverge.</div>
+            </div>
+            <button class="btn sm" id="restoreDefaults" type="button">Restore defaults</button>
+          </details>
+        </div>
+      </aside>
+
+      <!-- Stage -->
+      <div class="stage">
+        <div class="panel">
+          <div class="toolbar">
+            <button class="btn primary sm" id="toggle" type="button">❚❚ Pause</button>
+            <button class="btn sm" id="reset" type="button" title="Start over with a new random path">↻ New path</button>
+            <span class="clock"><span class="live" id="liveDot"></span><span id="clock">0.0 s</span></span>
+          </div>
+          <div class="arenas">
+            <div class="arena">
+              <div class="arena-head"><h3 class="std">Standard</h3><span class="dv">deformation <b id="standardMetric">0%</b></span></div>
+              <canvas id="standardCanvas" aria-label="Standard approach: robots around a deforming circular object"></canvas>
+            </div>
+            <div class="arena">
+              <div class="arena-head"><h3 class="dsr">DSR</h3><span class="dv">deformation <b id="dsrMetric">0%</b></span></div>
+              <canvas id="dsrCanvas" aria-label="DSR approach: robots around a nearly circular object"></canvas>
+            </div>
+          </div>
+          <div class="alert" id="stabAlert"></div>
+          <div class="legend">
+            <span><i class="sw dot" style="background:var(--ink)"></i>Leader robot</span>
+            <span><i class="sw dot" style="border:2px solid var(--muted)"></i>Follower robot</span>
+            <span><i class="sw ring"></i>Perfect circle (reference)</span>
+            <span><i class="sw" style="background:rgba(212,212,212,.45)"></i>Leader's path</span>
+            <span><i class="sw dash"></i>Arena wall</span>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="panel metric">
+            <h3>DSR deformation vs standard</h3>
+            <div class="headline" id="headline">—</div>
+            <div class="sub" id="headlineSub">Averaged since the path started.</div>
+          </div>
+          <div class="panel metric">
+            <h3>Average deformation</h3>
+            <div class="cmp">
+              <div class="cmp-row"><b class="std">Standard</b><div class="track"><i id="avgDStdBar" style="background:var(--std)"></i></div><span class="num" id="avgDStd">—</span></div>
+              <div class="cmp-row"><b class="dsr">DSR</b><div class="track"><i id="avgDDsrBar" style="background:var(--dsr)"></i></div><span class="num" id="avgDDsr">—</span></div>
+            </div>
+          </div>
+          <div class="panel metric">
+            <h3>Leader lag behind the path</h3>
+            <div class="cmp">
+              <div class="cmp-row"><b class="std">Standard</b><div class="track"><i id="lagStdBar" style="background:var(--std)"></i></div><span class="num" id="lagStd">—</span></div>
+              <div class="cmp-row"><b class="dsr">DSR</b><div class="track"><i id="lagDsrBar" style="background:var(--dsr)"></i></div><span class="num" id="lagDsr">—</span></div>
+            </div>
+            <div class="sub">In object radii, averaged.</div>
+          </div>
+        </div>
+
+        <div class="panel chart">
+          <h3>Deformation over time</h3>
+          <p>The last 30 seconds. Spikes line up with sharp turns and wall bounces.</p>
+          <canvas id="histCanvas"></canvas>
+          <div class="legend">
+            <span><i class="sw" style="background:var(--std)"></i>Standard</span>
+            <span><i class="sw" style="background:var(--dsr)"></i>DSR</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Math -->
+  <section class="section" style="padding-top:0">
+    <details class="panel math">
+      <summary>The math behind it</summary>
+      <p style="color:var(--muted);font-size:14px;margin:14px 0 0">The same update laws as the <a href="/simulation/dsr/" target="_top">1D simulation</a>, applied separately to each robot's x and y position on a ring network.</p>
+      <div class="eq">
+        <div class="eq-row"><span class="tag std">Standard</span><code>Y[m+1] = Y[m] + γ δt (−K Y[m] + B y<sub>d</sub>[m])</code></div>
+        <div class="eq-row"><span class="tag dsr">DSR</span><code>Y[m+1] = Y[m] + αβ δt (−K Y[m] + B y<sub>d</sub>[m]) + (I − βK)(Y[m] − Y[m−1])</code></div>
+      </div>
+      <ul>
+        <li><b>K</b> is the ring Laplacian (neighbour stiffness) with the leader pinned to the moving path point y<sub>d</sub>; δt = 0.03 s.</li>
+        <li><b>Deformation</b> is the RMS distance of the robots from their own centroid, divided by the object radius. 0% is a perfect circle.</li>
+        <li>This is an illustrative kinematic model. It does not simulate material forces or collisions.</li>
+      </ul>
+      <div class="stab">
+        <div>λ<sub>max</sub>(K)<b id="lamMax">—</b></div>
+        <div>Standard stability (γ limit)<b id="gammaLimit">—</b></div>
+        <div>DSR bound on β<b id="betaLimit">—</b></div>
+      </div>
+      <div class="cite">Based on Y. Gombo, A. Tiwari, S. Devasia, American Control Conference (ACC) 2021. <a href="https://arxiv.org/abs/2102.09056" target="_blank" rel="noopener">arXiv:2102.09056</a></div>
+    </details>
+  </section>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  // ---------- Model (logical arena units) ----------
+  const W = 800, H = 600, radius = 82, dt = 0.03;
+  const margin = 112, start = {x: W / 2, y: H / 2};
+  const DEFAULTS = {speed:85, turn:38, agents:8, stiffness:3, pin:3, gamma:1, alpha:2, beta:0.14};
+  const C = {std:'#f87171', dsr:'#60a5fa', ink:'#f5f5f5', muted:'#a3a3a3', faint:'#737373', grid:'#262626', bg:'#1a1a1a', surface:'#1f1f1f'};
+
+  const $ = id => document.getElementById(id);
+  const els = {};
+  ['standardCanvas','dsrCanvas','histCanvas','standardMetric','dsrMetric','toggle','reset','speed','speedValue','turn','turnValue','trails',
+   'agents','agentsValue','stiffness','stiffnessValue','pin','pinValue','gamma','gammaValue','alpha','alphaValue','beta','betaValue',
+   'stabAlert','clock','liveDot','headline','headlineSub','avgDStd','avgDDsr','avgDStdBar','avgDDsrBar','lagStd','lagDsr','lagStdBar','lagDsrBar',
+   'lamMax','gammaLimit','betaLimit'].forEach(id => els[id] = $(id));
+
+  let N = 8, offset = [], stiffness = 3, pin = 3, gamma = 1, alpha = 2, beta = 0.14;
+  let standard, dsr, dsrPrevious, leader, trail, standardDiverged = false, running = true, lastTime = 0, carry = 0, seed, simTime = 0;
+  let acc, hist;
+
+  function largestEigenvalue(){
+    // Jacobi rotations on the symmetric pinned ring Laplacian.
+    const m = Array.from({length:N}, () => Array(N).fill(0));
+    for (let i = 0; i < N; i++){ const j = (i+1)%N; m[i][i]+=stiffness; m[j][j]+=stiffness; m[i][j]-=stiffness; m[j][i]-=stiffness; }
+    m[0][0] += pin;
+    for (let it = 0; it < 20*N*N; it++){
+      let p=0, q=1, largest=0;
+      for (let i=0;i<N;i++) for (let j=i+1;j<N;j++){ const v=Math.abs(m[i][j]); if (v>largest){ largest=v; p=i; q=j; } }
+      if (largest < 1e-10) break;
+      const a=m[p][p], b=m[p][q], d=m[q][q];
+      const ang=0.5*Math.atan2(2*b, d-a), c=Math.cos(ang), s=Math.sin(ang);
+      m[p][p]=c*c*a-2*s*c*b+s*s*d; m[q][q]=s*s*a+2*s*c*b+c*c*d; m[p][q]=m[q][p]=0;
+      for (let k=0;k<N;k++) if (k!==p && k!==q){ const kp=m[k][p], kq=m[k][q]; m[k][p]=m[p][k]=c*kp-s*kq; m[k][q]=m[q][k]=s*kp+c*kq; }
+    }
+    return Math.max(...m.map((row,i)=>row[i]));
+  }
+
+  function updateLimits(){
+    const lambda = largestEigenvalue();
+    const betaLimit = 4/(lambda*(alpha*dt+2));
+    const betaMax = betaLimit*0.995; // keep the slider strictly inside the stability bound
+    els.beta.max = String(betaMax);
+    if (beta > betaMax){ beta = betaMax; els.beta.value = String(beta); }
+    els.betaValue.textContent = beta.toFixed(3);
+    const gammaLimit = 2/(lambda*dt);
+    const unstable = gamma >= gammaLimit;
+    els.lamMax.textContent = lambda.toFixed(2);
+    els.gammaLimit.innerHTML = `<span class="${unstable?'bad':'ok'}">γ &lt; ${gammaLimit.toFixed(2)}</span>`;
+    els.betaLimit.innerHTML = `<span class="ok">β &lt; ${betaLimit.toFixed(3)}</span>`;
+    els.stabAlert.textContent = unstable ? `γ = ${gamma.toFixed(2)} is above the standard method's stability limit (${gammaLimit.toFixed(2)}) for this network, so the standard team will diverge. Lower γ or the stiffness, then start a new path.` : '';
+    els.stabAlert.classList.toggle('show', unstable);
+    postHeight();
+  }
+
+  function random(){ seed = (1664525*seed + 1013904223) >>> 0; return seed/4294967296; }
+  function freshState(){ return Array.from({length:N}, () => ({x:start.x, y:start.y})); }
+
+  function reset(){
+    seed = (Date.now() ^ Math.floor(Math.random()*0xffffffff)) >>> 0;
+    standardDiverged = false;
+    offset = Array.from({length:N}, (_,i) => ({x:radius*Math.cos(2*Math.PI*i/N), y:radius*Math.sin(2*Math.PI*i/N)}));
+    standard = freshState(); dsr = freshState(); dsrPrevious = freshState();
+    leader = {x:start.x, y:start.y, heading:-0.35, turnRate:0};
+    trail = [{x:leader.x, y:leader.y}]; carry = 0; lastTime = 0; simTime = 0;
+    acc = {dS:0, dD:0, lS:0, lD:0, n:0};
+    hist = [];
+    draw(); updateMetrics();
+  }
+
+  function laplacian(state, i, axis){
+    const left = state[(i+N-1)%N][axis], right = state[(i+1)%N][axis];
+    return stiffness*(2*state[i][axis]-left-right) + (i===0 ? pin*state[i][axis] : 0);
+  }
+
+  function advanceLeader(){
+    // Smooth random steering; reflect the heading at each wall.
+    leader.turnRate = 0.94*leader.turnRate + 0.06*(random()*2-1);
+    leader.heading += leader.turnRate*Number(els.turn.value)/100*0.095;
+    const v = Number(els.speed.value)*dt;
+    leader.x += Math.cos(leader.heading)*v;
+    leader.y += Math.sin(leader.heading)*v;
+    if (leader.x < margin){ leader.x = 2*margin-leader.x; leader.heading = Math.PI-leader.heading; }
+    if (leader.x > W-margin){ leader.x = 2*(W-margin)-leader.x; leader.heading = Math.PI-leader.heading; }
+    if (leader.y < margin){ leader.y = 2*margin-leader.y; leader.heading = -leader.heading; }
+    if (leader.y > H-margin){ leader.y = 2*(H-margin)-leader.y; leader.heading = -leader.heading; }
+    leader.heading = Math.atan2(Math.sin(leader.heading), Math.cos(leader.heading));
+    trail.push({x:leader.x, y:leader.y}); if (trail.length > 380) trail.shift();
+  }
+
+  function deformation(state){
+    const cx = state.reduce((s,p)=>s+p.x,0)/N, cy = state.reduce((s,p)=>s+p.y,0)/N;
+    const err = state.reduce((s,p)=>s+(p.x-cx)**2+(p.y-cy)**2,0);
+    return {cx, cy, percent: Math.sqrt(err/N)/radius*100};
+  }
+
+  function step(){
+    advanceLeader();
+    const nextS = [], nextD = [];
+    const motion = dsr.map((p,j) => ({x:p.x-dsrPrevious[j].x, y:p.y-dsrPrevious[j].y}));
+    for (let i=0;i<N;i++){
+      const s = {}, d = {};
+      for (const axis of ['x','y']){
+        const target = leader[axis];
+        const ks = laplacian(standard,i,axis), kd = laplacian(dsr,i,axis), kv = laplacian(motion,i,axis);
+        s[axis] = standard[i][axis] + gamma*dt*(-ks + (i===0 ? pin*target : 0));
+        if (!Number.isFinite(s[axis]) || Math.abs(s[axis]) > 100000) standardDiverged = true;
+        d[axis] = dsr[i][axis] + alpha*beta*dt*(-kd + (i===0 ? pin*target : 0)) + motion[i][axis] - beta*kv;
+      }
+      nextS.push(s); nextD.push(d);
+    }
+    if (!standardDiverged) standard = nextS;
+    dsrPrevious = dsr; dsr = nextD;
+    simTime += dt;
+
+    const dS = standardDiverged ? NaN : deformation(standard).percent, dD = deformation(dsr).percent;
+    const lS = standardDiverged ? NaN : Math.hypot(standard[0].x-leader.x, standard[0].y-leader.y)/radius;
+    const lD = Math.hypot(dsr[0].x-leader.x, dsr[0].y-leader.y)/radius;
+    acc.dS += dS; acc.dD += dD; acc.lS += lS; acc.lD += lD; acc.n++;
+    hist.push({t:simTime, s:dS, d:dD});
+    while (hist.length && hist[0].t < simTime-30) hist.shift();
+  }
+
+  // ---------- Canvas sizing (crisp on high-DPI) ----------
+  function makeCanvas(el, logicalW){
+    const o = {el, ctx: el.getContext('2d'), w:0, h:0};
+    o.fit = () => {
+      const r = el.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+      o.w = r.width; o.h = r.height;
+      el.width = Math.max(1, Math.round(r.width*dpr)); el.height = Math.max(1, Math.round(r.height*dpr));
+      const k = logicalW ? (r.width*dpr)/logicalW : dpr;
+      o.ctx.setTransform(k,0,0,k,0,0);
     };
-    const ctx = {standard:els.standard.getContext('2d'),dsr:els.dsr.getContext('2d')};
-    let standard, dsr, dsrPrevious, leader, trail, standardDiverged = false, running = true, lastTime = 0, carry = 0, seed;
-    function largestEigenvalue(){
-      // Jacobi rotations give the largest eigenvalue of the symmetric pinned ring Laplacian.
-      const matrix=Array.from({length:N},()=>Array(N).fill(0));
-      for(let i=0;i<N;i++){
-        const j=(i+1)%N;
-        matrix[i][i]+=stiffness;matrix[j][j]+=stiffness;
-        matrix[i][j]-=stiffness;matrix[j][i]-=stiffness;
+    o.fit(); return o;
+  }
+  const arenas = {standard: makeCanvas(els.standardCanvas, W), dsr: makeCanvas(els.dsrCanvas, W)};
+  const histC = makeCanvas(els.histCanvas);
+
+  // ---------- Drawing ----------
+  function drawArena(which, state, color){
+    const c = arenas[which].ctx, info = deformation(state);
+    c.clearRect(0,0,W,H); c.fillStyle = C.bg; c.fillRect(0,0,W,H);
+    c.strokeStyle = C.grid; c.lineWidth = 1; c.setLineDash([]);
+    for (let x=50;x<W;x+=50){ c.beginPath(); c.moveTo(x,0); c.lineTo(x,H); c.stroke(); }
+    for (let y=50;y<H;y+=50){ c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); }
+    c.strokeStyle = '#4a4a4a'; c.lineWidth = 1.5; c.setLineDash([8,8]);
+    c.strokeRect(margin-radius*0.15, margin-radius*0.15, W-2*margin+radius*0.3, H-2*margin+radius*0.3);
+    c.setLineDash([]);
+
+    if (els.trails.checked && trail.length > 1){
+      c.lineCap = 'round'; c.lineJoin = 'round';
+      for (let i=1;i<trail.length;i++){
+        c.strokeStyle = `rgba(212,212,212,${0.05 + 0.45*i/trail.length})`; c.lineWidth = 2.5;
+        c.beginPath(); c.moveTo(trail[i-1].x, trail[i-1].y); c.lineTo(trail[i].x, trail[i].y); c.stroke();
       }
-      matrix[0][0]+=pin;
-      for(let iteration=0;iteration<20*N*N;iteration++){
-        let p=0,q=1,largest=0;
-        for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){
-          const value=Math.abs(matrix[i][j]);
-          if(value>largest){largest=value;p=i;q=j}
-        }
-        if(largest<1e-10)break;
-        const a=matrix[p][p],b=matrix[p][q],d=matrix[q][q];
-        const angle=0.5*Math.atan2(2*b,d-a),cos=Math.cos(angle),sin=Math.sin(angle);
-        matrix[p][p]=cos*cos*a-2*sin*cos*b+sin*sin*d;
-        matrix[q][q]=sin*sin*a+2*sin*cos*b+cos*cos*d;
-        matrix[p][q]=matrix[q][p]=0;
-        for(let k=0;k<N;k++)if(k!==p&&k!==q){
-          const kp=matrix[k][p],kq=matrix[k][q];
-          matrix[k][p]=matrix[p][k]=cos*kp-sin*kq;
-          matrix[k][q]=matrix[q][k]=sin*kp+cos*kq;
-        }
-      }
-      return Math.max(...matrix.map((row,i)=>row[i]));
     }
-    function updateLimits(){
-      const lambda=largestEigenvalue();
-      const betaLimit=4/(lambda*(alpha*dt+2));
-      const betaMax=betaLimit*0.995; // Keep the slider strictly inside the stability bound.
-      els.beta.max=String(betaMax);
-      if(beta>betaMax){beta=betaMax;els.beta.value=String(beta)}
-      els.betaValue.textContent=beta.toFixed(3);
-      const gammaLimit=2/(lambda*dt);
-      const unstable=gamma===0||gamma>=gammaLimit;
-      els.stabilityNote.classList.toggle('warning',unstable);
-      els.stabilityNote.textContent=`λmax(K) = ${lambda.toFixed(2)} · DSR β limit = ${betaLimit.toFixed(3)} (slider stays below it) · Standard γ limit = ${gammaLimit.toFixed(2)}${unstable?' — current γ is outside the stable range':''}.`;
+
+    if (which === 'standard' && standardDiverged){
+      c.fillStyle = '#fbbf24'; c.textAlign = 'center'; c.font = '600 28px Inter,system-ui,sans-serif';
+      c.fillText('Standard team diverged', W/2, H/2);
+      c.font = '18px Inter,system-ui,sans-serif'; c.fillStyle = C.muted;
+      c.fillText('Lower γ or stiffness, then start a new path', W/2, H/2+34);
+      els.standardMetric.textContent = '—'; return;
     }
-    function random(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296}
-    function freshState(){return Array.from({length:N},()=>({x:start.x,y:start.y}))}
-    function reset(){
-      seed = (Date.now() ^ Math.floor(Math.random()*0xffffffff)) >>> 0;
-      standardDiverged=false;
-      offset = Array.from({length:N}, (_,i) => ({x:radius*Math.cos(2*Math.PI*i/N),y:radius*Math.sin(2*Math.PI*i/N)}));
-      standard = freshState(); dsr = freshState(); dsrPrevious = freshState();
-      leader = {x:start.x,y:start.y,heading:-0.35,turnRate:0};
-      trail = [{x:leader.x,y:leader.y}];carry=0;lastTime=0;draw();
-    }
-    function laplacian(state,i,axis){
-      const left=state[(i+N-1)%N][axis], right=state[(i+1)%N][axis];
-      return stiffness*(2*state[i][axis]-left-right)+(i===0?pin*state[i][axis]:0);
-    }
-    function advanceLeader(){
-      // Smooth random steering makes a wandering path. Reflect the velocity at each wall.
-      leader.turnRate = 0.94*leader.turnRate + 0.06*(random()*2-1);
-      leader.heading += leader.turnRate*Number(els.turn.value)/100*0.095;
-      const v = Number(els.speed.value)*dt;
-      leader.x += Math.cos(leader.heading)*v;
-      leader.y += Math.sin(leader.heading)*v;
-      if(leader.x<margin){leader.x=2*margin-leader.x;leader.heading=Math.PI-leader.heading}
-      if(leader.x>W-margin){leader.x=2*(W-margin)-leader.x;leader.heading=Math.PI-leader.heading}
-      if(leader.y<margin){leader.y=2*margin-leader.y;leader.heading=-leader.heading}
-      if(leader.y>H-margin){leader.y=2*(H-margin)-leader.y;leader.heading=-leader.heading}
-      leader.heading=Math.atan2(Math.sin(leader.heading),Math.cos(leader.heading));
-      trail.push({x:leader.x,y:leader.y});if(trail.length>380)trail.shift();
-    }
-    function step(){
-      advanceLeader();
-      const nextStandard=[], nextDsr=[];
-      const motion=dsr.map((point,j)=>({x:point.x-dsrPrevious[j].x,y:point.y-dsrPrevious[j].y}));
-      for(let i=0;i<N;i++){
-        const s={},d={};
-        for(const axis of ['x','y']){
-          const target=leader[axis];
-          const ks=laplacian(standard,i,axis);
-          const kd=laplacian(dsr,i,axis);
-          const velocity=motion[i][axis];
-          const kv=laplacian(motion,i,axis);
-          s[axis]=standard[i][axis]+gamma*dt*(-ks+(i===0?pin*target:0));
-          if(!Number.isFinite(s[axis])||Math.abs(s[axis])>100000)standardDiverged=true;
-          d[axis]=dsr[i][axis]+alpha*beta*dt*(-kd+(i===0?pin*target:0))+velocity-beta*kv;
-        }
-        nextStandard.push(s);nextDsr.push(d);
-      }
-      if(!standardDiverged)standard=nextStandard;
-      dsrPrevious=dsr;dsr=nextDsr;
-    }
-    function deformation(state){
-      const cx=state.reduce((sum,p)=>sum+p.x,0)/N,cy=state.reduce((sum,p)=>sum+p.y,0)/N;
-      const error=state.reduce((sum,p,i)=>sum+(p.x-cx)**2+(p.y-cy)**2,0);
-      return {cx,cy,percent:Math.sqrt(error/N)/radius*100};
-    }
-    function drawArena(which,state,color){
-      const c=ctx[which], info=deformation(state);
-      c.clearRect(0,0,W,H);c.fillStyle='#1e1e1e';c.fillRect(0,0,W,H);
-      c.strokeStyle='#303030';c.lineWidth=1;
-      for(let x=0;x<W;x+=50){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}
-      for(let y=0;y<H;y+=50){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
-      c.strokeStyle='#686868';c.setLineDash([7,7]);c.strokeRect(margin,margin,W-2*margin,H-2*margin);
-      if(els.trails.checked&&trail.length>1){c.strokeStyle='#fbbf2470';c.lineWidth=2;c.setLineDash([]);c.beginPath();trail.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.stroke()}
-      if(which==='standard'&&standardDiverged){
-        c.setLineDash([]);c.fillStyle='#f5b35b';c.font='22px system-ui';c.textAlign='center';
-        c.fillText('Standard approach diverged',W/2,H/2);
-        c.font='15px system-ui';c.fillText('Lower γ or stiffness, then reset the path',W/2,H/2+30);
-        els.standardMetric.textContent='Diverged';return;
-      }
-      c.strokeStyle='#ffffff45';c.setLineDash([5,6]);c.lineWidth=1.5;c.beginPath();c.arc(info.cx,info.cy,radius,0,2*Math.PI);c.stroke();c.setLineDash([]);
-      c.fillStyle=color+'38';c.strokeStyle=color;c.lineWidth=3;c.beginPath();
-      state.forEach((p,i)=>i?c.lineTo(p.x+offset[i].x,p.y+offset[i].y):c.moveTo(p.x+offset[i].x,p.y+offset[i].y));
-      c.closePath();c.fill();c.stroke();
-      state.forEach((p,i)=>{const x=p.x+offset[i].x,y=p.y+offset[i].y;c.beginPath();c.arc(x,y,i===0?8:5.5,0,2*Math.PI);c.fillStyle=i===0?'#fbbf24':color;c.fill();c.strokeStyle='#1e1e1e';c.lineWidth=2;c.stroke()});
-      c.beginPath();c.arc(leader.x+offset[0].x,leader.y+offset[0].y,4,0,2*Math.PI);c.fillStyle='#fbbf2499';c.fill();
-      els[which+'Metric'].textContent=info.percent.toFixed(1)+'%';
-    }
-    function draw(){drawArena('standard',standard,'#f87171');drawArena('dsr',dsr,'#60a5fa')}
-    function frame(time){
-      if(running){
-        if(lastTime)carry+=Math.min((time-lastTime)/1000,0.1);
-        let steps=0;while(carry>=dt&&steps<5){step();carry-=dt;steps++}
-        draw();
-      }
-      lastTime=time;requestAnimationFrame(frame);
-    }
-    els.toggle.addEventListener('click',()=>{running=!running;els.toggle.textContent=running?'Pause':'Resume';lastTime=0});
-    els.reset.addEventListener('click',reset);
-    for(const name of ['speed','turn'])els[name].addEventListener('input',()=>{els[name+'Value'].textContent=els[name].value+(name==='turn'?'%':'')});
-    for(const name of ['stiffness','pin','gamma','alpha','beta'])els[name].addEventListener('input',()=>{
-      const value=Number(els[name].value);
-      els[name+'Value'].textContent=value.toFixed(name==='beta'?3:1);
-      if(name==='stiffness')stiffness=value;
-      if(name==='pin')pin=value;
-      if(name==='gamma')gamma=value;
-      if(name==='alpha')alpha=value;
-      if(name==='beta')beta=value;
-      if(name!=='beta')updateLimits();
+
+    // reference circle at the team centroid
+    c.strokeStyle = 'rgba(255,255,255,.35)'; c.setLineDash([6,7]); c.lineWidth = 1.8;
+    c.beginPath(); c.arc(info.cx, info.cy, radius, 0, 2*Math.PI); c.stroke(); c.setLineDash([]);
+
+    // object
+    const pts = state.map((p,i) => [p.x+offset[i].x, p.y+offset[i].y]);
+    c.beginPath(); pts.forEach(([x,y],i) => i ? c.lineTo(x,y) : c.moveTo(x,y)); c.closePath();
+    c.fillStyle = color === C.std ? 'rgba(248,113,113,.16)' : 'rgba(96,165,250,.16)'; c.fill();
+    c.strokeStyle = color; c.lineWidth = 4; c.lineJoin = 'round'; c.stroke();
+
+    // path target the leader is pulled toward
+    c.beginPath(); c.arc(leader.x+offset[0].x, leader.y+offset[0].y, 6, 0, 2*Math.PI);
+    c.strokeStyle = 'rgba(245,245,245,.6)'; c.lineWidth = 2; c.stroke();
+
+    // robots
+    pts.forEach(([x,y],i) => {
+      const lead = i === 0;
+      c.beginPath(); c.arc(x, y, lead ? 13 : 9.5, 0, 2*Math.PI);
+      c.fillStyle = lead ? C.ink : C.surface; c.fill();
+      c.lineWidth = 3; c.strokeStyle = lead ? C.ink : color; c.stroke();
     });
-    els.agents.addEventListener('input',()=>{els.agentsValue.textContent=els.agents.value});
-    els.agents.addEventListener('change',()=>{N=Number(els.agents.value);updateLimits();reset()});
-    els.trails.addEventListener('change',draw);
-    updateLimits();reset();requestAnimationFrame(frame);
-    if(window.frameElement){
-      const resizeFrame=()=>{window.frameElement.style.height=(document.body.scrollHeight+8)+'px'};
-      new ResizeObserver(resizeFrame).observe(document.body);
-      resizeFrame();
+    els[which+'Metric'].textContent = info.percent.toFixed(1) + '%';
+  }
+
+  function niceTicks(lo, hi, count){
+    const span = hi-lo || 1, raw = span/count, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const st = [1,2,2.5,5,10].map(m=>m*mag).find(x=>x>=raw) || raw;
+    const out = []; for (let v=Math.ceil(lo/st)*st; v<=hi+1e-9; v+=st) out.push(+v.toFixed(10)); return out;
+  }
+
+  function drawHistory(){
+    const {ctx, w, h} = histC; ctx.clearRect(0,0,w,h);
+    const x0 = 44, x1 = w-16, y0 = h-22, y1 = 8;
+    const tEnd = Math.max(30, simTime), tStart = tEnd-30;
+    let yMax = 10; for (const p of hist){ if (p.s > yMax && isFinite(p.s)) yMax = p.s; if (p.d > yMax && isFinite(p.d)) yMax = p.d; }
+    yMax *= 1.1;
+    const xn = t => x0 + (x1-x0)*((t-tStart)/30), yn = v => y0 - (y0-y1)*(Math.min(v,yMax)/yMax);
+    ctx.font = '11px Inter,system-ui,sans-serif';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    niceTicks(0, yMax, 4).forEach(v => {
+      ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, yn(v)); ctx.lineTo(x1, yn(v)); ctx.stroke();
+      ctx.fillStyle = C.faint; ctx.fillText(v+'%', x0-8, yn(v));
+    });
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    niceTicks(tStart, tEnd, 6).forEach(v => { if (v >= tStart) ctx.fillText(Math.round(v)+'s', xn(v), y0+6); });
+    if (hist.length < 2) return;
+    const line = (key, color, fill) => {
+      ctx.beginPath(); let started = false;
+      for (const p of hist){ const v = p[key]; if (!isFinite(v)) continue; const x = xn(p.t), y = yn(v); started ? ctx.lineTo(x,y) : ctx.moveTo(x,y); started = true; }
+      if (!started) return;
+      ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+      ctx.lineTo(xn(hist[hist.length-1].t), y0); ctx.lineTo(xn(hist[0].t), y0); ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
+    };
+    line('s', C.std, 'rgba(248,113,113,.12)');
+    line('d', C.dsr, 'rgba(96,165,250,.14)');
+  }
+
+  function setBars(aId, bId, a, b){
+    const m = Math.max(isFinite(a)?a:0, b, 1e-9);
+    els[aId].style.width = (isFinite(a) ? 100*a/m : 0) + '%';
+    els[bId].style.width = 100*b/m + '%';
+  }
+
+  function updateMetrics(){
+    els.clock.textContent = simTime.toFixed(1) + ' s';
+    els.liveDot.classList.toggle('off', !running);
+    const n = acc.n;
+    if (!n){ ['avgDStd','avgDDsr','lagStd','lagDsr'].forEach(k=>els[k].textContent='—'); els.headline.textContent='—'; return; }
+    const dS = acc.dS/n, dD = acc.dD/n, lS = acc.lS/n, lD = acc.lD/n;
+    els.avgDStd.textContent = isFinite(dS) ? dS.toFixed(1)+'%' : '—';
+    els.avgDDsr.textContent = dD.toFixed(1)+'%';
+    els.lagStd.textContent = isFinite(lS) ? lS.toFixed(2) : '—';
+    els.lagDsr.textContent = lD.toFixed(2);
+    setBars('avgDStdBar','avgDDsrBar', dS, dD);
+    setBars('lagStdBar','lagDsrBar', lS, lD);
+    if (!isFinite(dS)){ els.headline.innerHTML = '<span class="bad">Std diverged</span>'; els.headlineSub.textContent = 'Lower γ or stiffness, then start a new path.'; return; }
+    const pct = dS > 1e-9 ? (1 - dD/dS)*100 : 0;
+    const settled = simTime > 5;
+    const cls = settled ? (pct >= 0 ? 'dsr' : 'std') : '';
+    els.headline.innerHTML = `<span class="${cls}">${pct>=0?'−':'+'}${Math.abs(Math.round(pct))}%</span><small>deformation</small>`;
+    els.headlineSub.textContent = settled
+      ? (pct >= 0 ? `Over ${simTime.toFixed(0)} s, the DSR team kept the object ${Math.round(pct)}% closer to a circle.` : 'With these gains DSR is not helping. Try “Restore defaults”.')
+      : 'Warming up. Averaged since the path started.';
+  }
+
+  function draw(){ drawArena('standard', standard, C.std); drawArena('dsr', dsr, C.dsr); drawHistory(); }
+
+  let metricTick = 0;
+  function frame(time){
+    if (running){
+      if (lastTime) carry += Math.min((time-lastTime)/1000, 0.1);
+      let steps = 0; while (carry >= dt && steps < 5){ step(); carry -= dt; steps++; }
+      draw();
+      if (++metricTick % 6 === 0) updateMetrics();
     }
-  })();
-  </script>
+    lastTime = time; requestAnimationFrame(frame);
+  }
+
+  // ---------- Controls ----------
+  function syncLabels(){
+    els.speedValue.textContent = els.speed.value;
+    els.turnValue.textContent = els.turn.value + '%';
+    els.agentsValue.textContent = els.agents.value;
+    els.stiffnessValue.textContent = Number(els.stiffness.value).toFixed(1);
+    els.pinValue.textContent = Number(els.pin.value).toFixed(1);
+    els.gammaValue.textContent = Number(els.gamma.value).toFixed(2);
+    els.alphaValue.textContent = Number(els.alpha.value).toFixed(2);
+    els.betaValue.textContent = Number(els.beta.value).toFixed(3);
+  }
+  function readParams(){
+    stiffness = +els.stiffness.value; pin = +els.pin.value; gamma = +els.gamma.value; alpha = +els.alpha.value; beta = +els.beta.value;
+  }
+  function setRunning(r){
+    running = r; lastTime = 0;
+    els.toggle.textContent = running ? '❚❚ Pause' : '▶ Resume';
+    updateMetrics();
+  }
+
+  els.toggle.addEventListener('click', () => setRunning(!running));
+  els.reset.addEventListener('click', () => { reset(); if (!running) setRunning(true); });
+  ['speed','turn'].forEach(k => els[k].addEventListener('input', syncLabels));
+  ['stiffness','pin','gamma','alpha','beta'].forEach(k => els[k].addEventListener('input', () => {
+    syncLabels(); readParams(); updateLimits();
+  }));
+  els.agents.addEventListener('input', syncLabels);
+  els.agents.addEventListener('change', () => { N = +els.agents.value; updateLimits(); reset(); });
+  els.trails.addEventListener('change', draw);
+  $('restoreDefaults').addEventListener('click', () => {
+    els.beta.max = '1';
+    Object.entries(DEFAULTS).forEach(([k,v]) => els[k].value = v);
+    N = DEFAULTS.agents; readParams(); syncLabels(); updateLimits(); reset();
+  });
+  $('heroGo').addEventListener('click', () => {
+    if (window.parent === window) $('simulator').scrollIntoView({behavior:'smooth', block:'start'});
+    else { try { parent.postMessage({type:'sim-scroll', top: $('simulator').offsetTop}, '*'); } catch(e){} }
+  });
+
+  // ---------- Sizing (canvases + parent iframe) ----------
+  function postHeight(){
+    if (window.parent === window) return;
+    try { parent.postMessage({type:'sim-height', height: document.querySelector('.wrap').offsetHeight}, '*'); } catch(e){}
+  }
+  let rt;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { arenas.standard.fit(); arenas.dsr.fit(); histC.fit(); draw(); postHeight(); }, 80); });
+  if ('ResizeObserver' in window) new ResizeObserver(postHeight).observe(document.querySelector('.wrap'));
+  document.querySelectorAll('details').forEach(d => d.addEventListener('toggle', postHeight));
+
+  syncLabels(); readParams(); updateLimits(); reset(); requestAnimationFrame(frame); postHeight();
+})();
+</script>
 </body>
 </html>

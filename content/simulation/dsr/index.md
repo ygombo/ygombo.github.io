@@ -7,7 +7,7 @@ date: 2023-08-24
 
 <iframe
   id="dsr-sim"
-  src="/sim.html"
+  src="/sim.html?v=2026-11-18"
   title="Standard vs DSR interactive simulation"
   style="width:100%; min-height:900px; height:2000px; border:0; display:block; overflow:hidden;"
   scrolling="no"
