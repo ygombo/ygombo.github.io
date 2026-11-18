@@ -19,9 +19,8 @@ sections:
         text: Download CV
         url: uploads/resume.pdf
     design:
-      css_class: dark
+      # Follows the site's light/dark theme; light-mode styling is in layouts/partials/hooks/head-end/hero-theme.html
       background:
-        color: black
         image:
           # Add your image background to `assets/media/`.
           filename: bg1.jpg

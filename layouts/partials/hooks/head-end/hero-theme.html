@@ -1,0 +1,20 @@
+<style>
+  /* Homepage hero (biography block): keep the background photo in both themes.
+     Dark mode uses the darkening filter set in content/_index.md (brightness 0.3).
+     Light mode inverts the photo (dark backdrop -> white, white network lines -> dark) and adds a soft
+     veil so the pattern stays subtle behind dark text. The veil sits inside the inverted element,
+     so it is declared black here and renders as white. */
+  html:not(.dark) #section-resume-biography-3 .home-section-bg {
+    filter: invert(1) !important;
+  }
+  html:not(.dark) #section-resume-biography-3 .home-section-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.82) 100%);
+  }
+  /* Light mode: the avatar's white ring blends into the white hero, so outline it with a subtle grey border. */
+  html:not(.dark) #section-resume-biography-3 .avatar {
+    box-shadow: 0 0 0 1px #d4d4d4, 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+</style>
