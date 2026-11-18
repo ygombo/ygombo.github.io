@@ -7,7 +7,7 @@ date: 2026-09-17
 
 <iframe
   id="planar-sim"
-  src="/planar-sim.html?v=2026-11-18"
+  src="/planar-sim.html?v=2026-11-18b"
   title="DSR planar simulation"
   style="width:100%; min-height:900px; height:2200px; border:0; display:block; overflow:hidden;"
   scrolling="no"

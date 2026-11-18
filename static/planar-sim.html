@@ -6,10 +6,24 @@
 <title>DSR Planar Simulation</title>
 <style>
   :root{
-    color-scheme:dark;
-    --bg:#171717; --surface:#1f1f1f; --surface-2:#262626; --line:#2f2f2f; --line-2:#3a3a3a;
+        --bg:rgb(23,24,28); --surface:#1f1f1f; --surface-2:#262626; --line:#2f2f2f; --line-2:#3a3a3a;
     --ink:#f5f5f5; --ink-2:#d4d4d4; --muted:#a3a3a3; --faint:#737373;
     --std:#f87171; --dsr:#60a5fa; --good:#86efac; --warn:#fbbf24; --radius:14px;
+    --on-ink:#111; --primary-hover:#fff; --hover-line:#4a4a4a;
+    --canvas-bg:#1a1a1a; --grid:#2a2a2a; --wall:#4a4a4a; --object:rgba(212,212,212,.16); --trail-rgb:212,212,212;
+    --ref:rgba(255,255,255,.35); --target:rgba(245,245,245,.6);
+    --std-fill:rgba(248,113,113,.13); --dsr-fill:rgba(96,165,250,.15);
+    --alert-ink:#fde68a; --alert-bg:rgba(251,191,36,.08); --alert-line:rgba(251,191,36,.35);
+  }
+  html.light{
+    --bg:#ffffff; --surface:#fafafa; --surface-2:#f0f0f0; --line:#e5e5e5; --line-2:#d4d4d4;
+    --ink:#171717; --ink-2:#404040; --muted:#525252; --faint:#8a8a8a;
+    --std:#dc2626; --dsr:#2563eb; --good:#15803d; --warn:#b45309;
+    --on-ink:#fff; --primary-hover:#000; --hover-line:#bdbdbd;
+    --canvas-bg:#ffffff; --grid:#efefef; --wall:#c4c4c4; --object:rgba(64,64,64,.10); --trail-rgb:82,82,82;
+    --ref:rgba(0,0,0,.3); --target:rgba(23,23,23,.55);
+    --std-fill:rgba(220,38,38,.10); --dsr-fill:rgba(37,99,235,.11);
+    --alert-ink:#92400e; --alert-bg:#fffbeb; --alert-line:#fcd34d;
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--ink)}
@@ -26,9 +40,9 @@
   .hero p{color:var(--ink-2);font-size:17px;max-width:68ch;margin:0}
   .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
   .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 18px;font:600 14px/1 inherit;font-family:inherit;cursor:pointer;border:1px solid var(--line-2);background:transparent;color:var(--ink);text-decoration:none;transition:background .15s,border-color .15s}
-  .btn:hover{background:var(--surface-2);border-color:#4a4a4a}
-  .btn.primary{background:var(--ink);color:#111;border-color:var(--ink)}
-  .btn.primary:hover{background:#fff}
+  .btn:hover{background:var(--surface-2);border-color:var(--hover-line)}
+  .btn.primary{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+  .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover)}
   .btn.sm{padding:8px 14px;font-size:13px}
   .btn:focus-visible{outline:2px solid var(--dsr);outline-offset:2px}
 
@@ -83,7 +97,7 @@
   .sw.dot{width:10px;height:10px;border-radius:999px}
   .sw.ring{width:12px;height:12px;border-radius:999px;border:1.5px dashed var(--faint)}
   .sw.dash{background:repeating-linear-gradient(90deg,var(--faint) 0 4px,transparent 4px 7px)}
-  .alert{display:none;margin:0 16px 14px;padding:10px 14px;border-radius:10px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:#fde68a;font-size:13px}
+  .alert{display:none;margin:0 16px 14px;padding:10px 14px;border-radius:10px;border:1px solid var(--alert-line);background:var(--alert-bg);color:var(--alert-ink);font-size:13px}
   .alert.show{display:block}
 
   .metrics{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px}
@@ -136,6 +150,24 @@
     .eq-row{grid-template-columns:1fr}
   }
 </style>
+<script>
+  /* Follow the site's light/dark theme (the parent page toggles a `dark` class on <html>). */
+  (function(){
+    var root=document.documentElement, mq=window.matchMedia('(prefers-color-scheme: dark)');
+    function isDark(){
+      try{ if(window.parent!==window) return window.parent.document.documentElement.classList.contains('dark'); }catch(e){}
+      return mq.matches;
+    }
+    function apply(){
+      var d=isDark(), changed=root.classList.contains('light')===d;
+      root.classList.toggle('light',!d); root.style.colorScheme=d?'dark':'light';
+      if(changed) window.dispatchEvent(new Event('sim-theme'));
+    }
+    apply();
+    try{ if(window.parent!==window) new MutationObserver(apply).observe(window.parent.document.documentElement,{attributes:true,attributeFilter:['class']}); }catch(e){}
+    if(mq.addEventListener) mq.addEventListener('change',apply);
+  })();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -262,7 +294,7 @@
             <span><i class="sw dot" style="background:var(--ink)"></i>Leader robot</span>
             <span><i class="sw dot" style="border:2px solid var(--muted)"></i>Follower robot</span>
             <span><i class="sw ring"></i>Perfect circle (reference)</span>
-            <span><i class="sw" style="background:rgba(212,212,212,.45)"></i>Leader's path</span>
+            <span><i class="sw" style="background:rgba(var(--trail-rgb),.5)"></i>Leader's path</span>
             <span><i class="sw dash"></i>Arena wall</span>
           </div>
         </div>
@@ -334,7 +366,14 @@
   const W = 800, H = 600, radius = 82, dt = 0.03;
   const margin = 112, start = {x: W / 2, y: H / 2};
   const DEFAULTS = {speed:85, turn:38, agents:8, stiffness:3, pin:3, gamma:1, alpha:2, beta:0.14};
-  const C = {std:'#f87171', dsr:'#60a5fa', ink:'#f5f5f5', muted:'#a3a3a3', faint:'#737373', grid:'#262626', bg:'#1a1a1a', surface:'#1f1f1f'};
+  const C = {};
+  function loadColors(){
+    const cs = getComputedStyle(document.documentElement), v = n => cs.getPropertyValue(n).trim();
+    Object.assign(C, { std:v('--std'), dsr:v('--dsr'), ink:v('--ink'), muted:v('--muted'), faint:v('--faint'), grid:v('--grid'),
+      bg:v('--canvas-bg'), surface:v('--surface'), wall:v('--wall'), trail:v('--trail-rgb'), ref:v('--ref'), target:v('--target'),
+      warn:v('--warn'), stdFill:v('--std-fill'), dsrFill:v('--dsr-fill') });
+  }
+  loadColors();
 
   const $ = id => document.getElementById(id);
   const els = {};
@@ -471,20 +510,20 @@
     c.strokeStyle = C.grid; c.lineWidth = 1; c.setLineDash([]);
     for (let x=50;x<W;x+=50){ c.beginPath(); c.moveTo(x,0); c.lineTo(x,H); c.stroke(); }
     for (let y=50;y<H;y+=50){ c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); }
-    c.strokeStyle = '#4a4a4a'; c.lineWidth = 1.5; c.setLineDash([8,8]);
+    c.strokeStyle = C.wall; c.lineWidth = 1.5; c.setLineDash([8,8]);
     c.strokeRect(margin-radius*0.15, margin-radius*0.15, W-2*margin+radius*0.3, H-2*margin+radius*0.3);
     c.setLineDash([]);
 
     if (els.trails.checked && trail.length > 1){
       c.lineCap = 'round'; c.lineJoin = 'round';
       for (let i=1;i<trail.length;i++){
-        c.strokeStyle = `rgba(212,212,212,${0.05 + 0.45*i/trail.length})`; c.lineWidth = 2.5;
+        c.strokeStyle = `rgba(${C.trail},${0.05 + 0.5*i/trail.length})`; c.lineWidth = 2.5;
         c.beginPath(); c.moveTo(trail[i-1].x, trail[i-1].y); c.lineTo(trail[i].x, trail[i].y); c.stroke();
       }
     }
 
     if (which === 'standard' && standardDiverged){
-      c.fillStyle = '#fbbf24'; c.textAlign = 'center'; c.font = '600 28px Inter,system-ui,sans-serif';
+      c.fillStyle = C.warn; c.textAlign = 'center'; c.font = '600 28px Inter,system-ui,sans-serif';
       c.fillText('Standard team diverged', W/2, H/2);
       c.font = '18px Inter,system-ui,sans-serif'; c.fillStyle = C.muted;
       c.fillText('Lower γ or stiffness, then start a new path', W/2, H/2+34);
@@ -492,18 +531,18 @@
     }
 
     // reference circle at the team centroid
-    c.strokeStyle = 'rgba(255,255,255,.35)'; c.setLineDash([6,7]); c.lineWidth = 1.8;
+    c.strokeStyle = C.ref; c.setLineDash([6,7]); c.lineWidth = 1.8;
     c.beginPath(); c.arc(info.cx, info.cy, radius, 0, 2*Math.PI); c.stroke(); c.setLineDash([]);
 
     // object
     const pts = state.map((p,i) => [p.x+offset[i].x, p.y+offset[i].y]);
     c.beginPath(); pts.forEach(([x,y],i) => i ? c.lineTo(x,y) : c.moveTo(x,y)); c.closePath();
-    c.fillStyle = color === C.std ? 'rgba(248,113,113,.16)' : 'rgba(96,165,250,.16)'; c.fill();
+    c.fillStyle = which === 'standard' ? C.stdFill : C.dsrFill; c.fill();
     c.strokeStyle = color; c.lineWidth = 4; c.lineJoin = 'round'; c.stroke();
 
     // path target the leader is pulled toward
     c.beginPath(); c.arc(leader.x+offset[0].x, leader.y+offset[0].y, 6, 0, 2*Math.PI);
-    c.strokeStyle = 'rgba(245,245,245,.6)'; c.lineWidth = 2; c.stroke();
+    c.strokeStyle = C.target; c.lineWidth = 2; c.stroke();
 
     // robots
     pts.forEach(([x,y],i) => {
@@ -544,8 +583,8 @@
       ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
       ctx.lineTo(xn(hist[hist.length-1].t), y0); ctx.lineTo(xn(hist[0].t), y0); ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
     };
-    line('s', C.std, 'rgba(248,113,113,.12)');
-    line('d', C.dsr, 'rgba(96,165,250,.14)');
+    line('s', C.std, C.stdFill);
+    line('d', C.dsr, C.dsrFill);
   }
 
   function setBars(aId, bId, a, b){
@@ -637,6 +676,8 @@
   window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { arenas.standard.fit(); arenas.dsr.fit(); histC.fit(); draw(); postHeight(); }, 80); });
   if ('ResizeObserver' in window) new ResizeObserver(postHeight).observe(document.querySelector('.wrap'));
   document.querySelectorAll('details').forEach(d => d.addEventListener('toggle', postHeight));
+
+  window.addEventListener('sim-theme', () => { loadColors(); draw(); });
 
   syncLabels(); readParams(); updateLimits(); reset(); requestAnimationFrame(frame); postHeight();
 })();

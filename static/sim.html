@@ -6,11 +6,26 @@
 <title>DSR Robot Team Simulation</title>
 <style>
   :root{
-    --bg:#171717; --surface:#1f1f1f; --surface-2:#262626; --line:#2f2f2f; --line-2:#3a3a3a;
+    --bg:rgb(23,24,28); --surface:#1f1f1f; --surface-2:#262626; --line:#2f2f2f; --line-2:#3a3a3a;
     --ink:#f5f5f5; --ink-2:#d4d4d4; --muted:#a3a3a3; --faint:#737373;
     --std:#f87171; --std-soft:rgba(248,113,113,.14);
     --dsr:#60a5fa; --dsr-soft:rgba(96,165,250,.14);
     --good:#86efac; --warn:#fbbf24; --radius:14px;
+    --on-ink:#111; --primary-hover:#fff; --hover-line:#4a4a4a;
+    --canvas-bg:#1a1a1a; --grid:#2a2a2a; --wall:#4a4a4a; --object:rgba(212,212,212,.16); --trail-rgb:212,212,212;
+    --ref:rgba(255,255,255,.35); --target:rgba(245,245,245,.6);
+    --std-fill:rgba(248,113,113,.13); --dsr-fill:rgba(96,165,250,.15);
+    --alert-ink:#fde68a; --alert-bg:rgba(251,191,36,.08); --alert-line:rgba(251,191,36,.35);
+  }
+  html.light{
+    --bg:#ffffff; --surface:#fafafa; --surface-2:#f0f0f0; --line:#e5e5e5; --line-2:#d4d4d4;
+    --ink:#171717; --ink-2:#404040; --muted:#525252; --faint:#8a8a8a;
+    --std:#dc2626; --dsr:#2563eb; --good:#15803d; --warn:#b45309;
+    --on-ink:#fff; --primary-hover:#000; --hover-line:#bdbdbd;
+    --canvas-bg:#ffffff; --grid:#efefef; --wall:#c4c4c4; --object:rgba(64,64,64,.10); --trail-rgb:82,82,82;
+    --ref:rgba(0,0,0,.3); --target:rgba(23,23,23,.55);
+    --std-fill:rgba(220,38,38,.10); --dsr-fill:rgba(37,99,235,.11);
+    --alert-ink:#92400e; --alert-bg:#fffbeb; --alert-line:#fcd34d;
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--ink)}
@@ -27,9 +42,9 @@
   .hero p{color:var(--ink-2);font-size:17px;max-width:68ch;margin:0}
   .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
   .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 18px;font:600 14px/1 inherit;font-family:inherit;cursor:pointer;border:1px solid var(--line-2);background:transparent;color:var(--ink);text-decoration:none;transition:background .15s,border-color .15s}
-  .btn:hover{background:var(--surface-2);border-color:#4a4a4a}
-  .btn.primary{background:var(--ink);color:#111;border-color:var(--ink)}
-  .btn.primary:hover{background:#fff}
+  .btn:hover{background:var(--surface-2);border-color:var(--hover-line)}
+  .btn.primary{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+  .btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover)}
   .btn.sm{padding:8px 14px;font-size:13px}
   .btn:focus-visible,.chip:focus-visible{outline:2px solid var(--dsr);outline-offset:2px}
 
@@ -55,7 +70,7 @@
   .chips{display:flex;gap:6px;flex-wrap:wrap}
   .chip{flex:1;min-width:0;padding:8px 10px;border-radius:10px;border:1px solid var(--line-2);background:transparent;color:var(--ink-2);font:600 13px/1.2 inherit;font-family:inherit;cursor:pointer}
   .chip:hover{background:var(--surface-2)}
-  .chip[aria-pressed="true"]{background:var(--ink);color:#111;border-color:var(--ink)}
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
   .field{margin-bottom:14px}
   .field:last-child{margin-bottom:0}
   .field-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
@@ -89,7 +104,7 @@
   .sw.dot{width:10px;height:10px;border-radius:999px}
   .sw.dash{background:repeating-linear-gradient(90deg,var(--faint) 0 4px,transparent 4px 7px)}
 
-  .alert{display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 16px 14px;padding:10px 14px;border-radius:10px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:#fde68a;font-size:13px}
+  .alert{display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 16px 14px;padding:10px 14px;border-radius:10px;border:1px solid var(--alert-line);background:var(--alert-bg);color:var(--alert-ink);font-size:13px}
   .alert.show{display:flex}
 
   .metrics{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px}
@@ -143,6 +158,24 @@
     .eq-row{grid-template-columns:1fr}
   }
 </style>
+<script>
+  /* Follow the site's light/dark theme (the parent page toggles a `dark` class on <html>). */
+  (function(){
+    var root=document.documentElement, mq=window.matchMedia('(prefers-color-scheme: dark)');
+    function isDark(){
+      try{ if(window.parent!==window) return window.parent.document.documentElement.classList.contains('dark'); }catch(e){}
+      return mq.matches;
+    }
+    function apply(){
+      var d=isDark(), changed=root.classList.contains('light')===d;
+      root.classList.toggle('light',!d); root.style.colorScheme=d?'dark':'light';
+      if(changed) window.dispatchEvent(new Event('sim-theme'));
+    }
+    apply();
+    try{ if(window.parent!==window) new MutationObserver(apply).observe(window.parent.document.documentElement,{attributes:true,attributeFilter:['class']}); }catch(e){}
+    if(mq.addEventListener) mq.addEventListener('change',apply);
+  })();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -372,12 +405,14 @@
 <script>
 (function(){
   const el = id => document.getElementById(id);
-  const css = getComputedStyle(document.documentElement);
-  const C = {
-    std: css.getPropertyValue('--std').trim(), dsr: css.getPropertyValue('--dsr').trim(),
-    ink: '#f5f5f5', muted: '#a3a3a3', faint: '#737373', grid: '#2a2a2a', axis: '#3a3a3a',
-    surface: '#1f1f1f', object: 'rgba(212,212,212,.16)'
-  };
+  const C = {};
+  function loadColors(){
+    const cs = getComputedStyle(document.documentElement), v = n => cs.getPropertyValue(n).trim();
+    Object.assign(C, { std:v('--std'), dsr:v('--dsr'), ink:v('--ink'), muted:v('--muted'), faint:v('--faint'),
+      grid:v('--grid'), axis:v('--line-2'), surface:v('--surface'), object:v('--object'),
+      stdFill:v('--std-fill'), dsrFill:v('--dsr-fill') });
+  }
+  loadColors();
   const DEFAULTS = { gamma:1, beta:0.4, alpha:2.5, stiff:1, kpin:2, dt:0.03, y0:0 };
 
   const inputs = ['n','topo','leaders','stiff','kpin','dt','gamma','alpha','beta','y0','ydA','ydF','tmax'].reduce((o,k)=>(o[k]=el(k),o),{});
@@ -575,8 +610,8 @@
       ctx.beginPath(); for(let i=0;i<arr.length;i+=k){ const x=xn(hist.T[i]),y=yn(arr[i]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
       ctx.strokeStyle=color; ctx.lineWidth=2; ctx.stroke();
     };
-    area(hist.D_std,C.std,'rgba(248,113,113,.12)');
-    area(hist.D_dsr,C.dsr,'rgba(96,165,250,.14)');
+    area(hist.D_std,C.std,C.stdFill);
+    area(hist.D_dsr,C.dsr,C.dsrFill);
   }
 
   function drawTimeSeries(){
@@ -751,6 +786,8 @@
   window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ A.fit(); H.fit(); T.fit(); render(); postHeight(); },80); });
   if('ResizeObserver' in window) new ResizeObserver(postHeight).observe(document.querySelector('.wrap'));
   document.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',postHeight));
+
+  window.addEventListener('sim-theme', () => { loadColors(); render(); });
 
   rebuild(); postHeight();
 })();
