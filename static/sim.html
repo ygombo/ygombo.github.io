@@ -3,541 +3,756 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Simulation: Standard vs Delayed-Self-Reinforcement (Object Transport using Robot Networks)</title>
+<title>DSR Robot Team Simulation</title>
 <style>
   :root{
-    --bg:#171717;--panel:transparent;--panel-soft:#171717;--ink:#e8e8e8;--muted:#a3a3a3;--line:#333333;--accent:#d4d4d4;--accent2:#8fd6ad;--accent-soft:#2a2a2a;--warn:#f5b35b;--bad:#ff8a8a;
+    --bg:#171717; --surface:#1f1f1f; --surface-2:#262626; --line:#2f2f2f; --line-2:#3a3a3a;
+    --ink:#f5f5f5; --ink-2:#d4d4d4; --muted:#a3a3a3; --faint:#737373;
+    --std:#f87171; --std-soft:rgba(248,113,113,.14);
+    --dsr:#60a5fa; --dsr-soft:rgba(96,165,250,.14);
+    --good:#86efac; --warn:#fbbf24; --radius:14px;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-  header{position:relative;padding:8px 0 20px;border-bottom:1px solid var(--line);background:transparent}
-  h1{margin:0;max-width:100%;font-size:clamp(18px,2.2vw,24px);line-height:1.25;font-weight:700;letter-spacing:0;color:#f5f5f5;overflow-wrap:anywhere}
-  .container{display:grid;grid-template-columns:minmax(360px,420px) minmax(0,1fr);gap:24px;padding:20px 0 0}
-  .card{background:transparent;border:0;border-radius:0;box-shadow:none}
-  .panel{padding:0}
-  .container > .panel:first-child{border-right:1px solid var(--line);padding-right:24px}
-  .controls{display:grid;gap:14px}
-  .row{display:grid;grid-template-columns:minmax(150px,190px) minmax(0,1fr);gap:12px;align-items:center}
-  .row:has(input[type=range]){grid-template-columns:minmax(150px,190px) minmax(160px,1fr) 54px}
-  .row label{color:var(--muted);font-size:12px;font-weight:600;line-height:1.25;overflow-wrap:anywhere}
-  .row span{color:var(--ink);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
-  input[type=range]{width:100%;accent-color:var(--accent)}
-  input[type=number], select{width:100%;min-width:0;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
-  input[type=number]:focus, select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
-  hr{width:100%;border:0;border-top:1px solid var(--line);margin:2px 0}
-  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-  button{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px 12px;cursor:pointer;font-weight:600}
-  button:hover{background:#101010;border-color:#3a3a3a}
-  button#run{background:#e5e5e5;border-color:#e5e5e5;color:#111}
-  button#run:hover{background:#f5f5f5;border-color:#f5f5f5}
-  .grid{display:grid;grid-template-columns: 1fr 1fr;gap:12px}
-  .metrics{display:grid;grid-template-columns: repeat(2, minmax(0,1fr));gap:10px}
-  .metric{background:transparent;border-top:1px solid var(--line);border-radius:0;padding:12px 0}
-  .metric h3{margin:0 0 6px 0;font-size:12px;color:var(--muted);font-weight:700}
-  .metric .val{font-size:18px;font-weight:700;color:#f5f5f5}
-  canvas{width:100%;height:260px;background:var(--bg);border-radius:0;border:1px solid var(--line)}
-  .note{color:var(--muted);font-size:12px;margin-top:8px}
-  .pill{display:inline-block;padding:3px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:#d4d4d4;font-size:11px;font-weight:700}
-  .warn{color:var(--warn)}
-  .bad{color:var(--bad)}
-  .paper-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;color:#d4d4d4;font-weight:600;text-decoration:none}
-  .paper-link:hover{text-decoration:underline}
-  .grid > .panel,.container > .panel:nth-child(2) > .panel{border-top:1px solid var(--line);padding-top:12px}
-  .container > .panel:nth-child(2) > .grid > .panel{border-top:0;padding-top:0}
-  h3{font-weight:700}
-  @media (max-width: 980px){
-    .container,.grid{grid-template-columns:1fr}
-    .container > .panel:first-child{border-right:0;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:16px}
-    header{padding:8px 0 18px}
+  html,body{margin:0;background:var(--bg);color:var(--ink)}
+  body{font:15px/1.6 Inter,system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:8px 0 24px}
+  a{color:var(--ink)}
+  h1,h2,h3{margin:0;line-height:1.2}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .std{color:var(--std)} .dsr{color:var(--dsr)}
+
+  /* Hero */
+  .hero{padding:12px 0 36px;border-bottom:1px solid var(--line)}
+  .hero h1{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.02em;margin:10px 0 14px;max-width:22ch}
+  .hero p{color:var(--ink-2);font-size:17px;max-width:68ch;margin:0}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 18px;font:600 14px/1 inherit;font-family:inherit;cursor:pointer;border:1px solid var(--line-2);background:transparent;color:var(--ink);text-decoration:none;transition:background .15s,border-color .15s}
+  .btn:hover{background:var(--surface-2);border-color:#4a4a4a}
+  .btn.primary{background:var(--ink);color:#111;border-color:var(--ink)}
+  .btn.primary:hover{background:#fff}
+  .btn.sm{padding:8px 14px;font-size:13px}
+  .btn:focus-visible,.chip:focus-visible{outline:2px solid var(--dsr);outline-offset:2px}
+
+  /* Steps */
+  .section{padding:36px 0}
+  .section-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px;margin-bottom:18px}
+  .section-head h2{font-size:24px;font-weight:700}
+  .section-head p{margin:0;color:var(--muted);font-size:14px}
+  .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .step .n{display:inline-flex;width:28px;height:28px;border-radius:999px;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--surface-2);border:1px solid var(--line-2);margin-bottom:12px}
+  .step h3{font-size:16px;margin-bottom:6px}
+  .step p{margin:0;color:var(--muted);font-size:14px}
+  .step.s-std{border-top:3px solid var(--std)}
+  .step.s-dsr{border-top:3px solid var(--dsr)}
+
+  /* Simulator */
+  .sim{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+  .controls{padding:18px;position:sticky;top:12px}
+  .group + .group{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+  .group-title{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{flex:1;min-width:0;padding:8px 10px;border-radius:10px;border:1px solid var(--line-2);background:transparent;color:var(--ink-2);font:600 13px/1.2 inherit;font-family:inherit;cursor:pointer}
+  .chip:hover{background:var(--surface-2)}
+  .chip[aria-pressed="true"]{background:var(--ink);color:#111;border-color:var(--ink)}
+  .field{margin-bottom:14px}
+  .field:last-child{margin-bottom:0}
+  .field-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+  .field label{font-size:13px;color:var(--ink-2);font-weight:500}
+  .field .val{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .hint{font-size:12px;color:var(--faint);margin-top:4px;line-height:1.4}
+  input[type=range]{width:100%;accent-color:var(--ink);margin:0}
+  input[type=range]:disabled{opacity:.4}
+  input[type=number],select{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line-2);border-radius:8px;padding:8px 10px;font:inherit;font-size:14px}
+  input[type=number]:focus,select:focus{outline:2px solid var(--dsr);outline-offset:1px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .check{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink-2);cursor:pointer;margin-bottom:14px}
+  .check input{margin-top:3px;accent-color:var(--dsr)}
+  details.adv summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  details.adv summary::-webkit-details-marker{display:none}
+  details.adv summary::after{content:"+";font-size:18px;font-weight:400;letter-spacing:0}
+  details.adv[open] summary::after{content:"−"}
+  details.adv[open] summary{margin-bottom:12px}
+
+  .stage{display:grid;gap:18px;min-width:0}
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .progress{flex:1;min-width:160px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .bar{flex:1;height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;background:var(--ink-2);border-radius:999px}
+  .speed{width:auto;padding:7px 8px;font-size:13px}
+  .viz{padding:6px 16px 16px}
+  .viz canvas{display:block;width:100%;height:340px}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted);padding:0 16px 14px}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:14px;height:3px;border-radius:2px;display:inline-block}
+  .sw.dot{width:10px;height:10px;border-radius:999px}
+  .sw.dash{background:repeating-linear-gradient(90deg,var(--faint) 0 4px,transparent 4px 7px)}
+
+  .alert{display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 16px 14px;padding:10px 14px;border-radius:10px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:#fde68a;font-size:13px}
+  .alert.show{display:flex}
+
+  .metrics{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px}
+  .metric{padding:16px 18px}
+  .metric h3{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px}
+  .headline{font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .headline small{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:6px}
+  .metric .sub{font-size:13px;color:var(--muted);margin-top:8px}
+  .cmp{display:grid;gap:8px}
+  .cmp-row{display:grid;grid-template-columns:62px 1fr 52px;align-items:center;gap:10px;font-size:13px}
+  .cmp-row b{font-weight:600}
+  .cmp-row .num{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+  .track{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+  .track i{display:block;height:100%;width:0;border-radius:999px}
+
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .chart{padding:16px 16px 12px}
+  .chart h3{font-size:15px;font-weight:600;margin-bottom:2px}
+  .chart p{margin:0 0 10px;font-size:13px;color:var(--muted)}
+  .chart canvas{display:block;width:100%;height:220px}
+  .chart .legend{padding:8px 0 0}
+
+  /* Math */
+  .math{padding:20px 22px}
+  .math summary{cursor:pointer;font-weight:600;font-size:16px}
+  .eq{display:grid;gap:12px;margin-top:16px}
+  .eq-row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:baseline;padding:12px 14px;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+  .eq-row code{font:14px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--ink-2);overflow-x:auto;white-space:nowrap}
+  .tag{font-size:12px;font-weight:700}
+  .math ul{margin:16px 0 0;padding-left:18px;color:var(--muted);font-size:14px}
+  .math li{margin:4px 0}
+  .stab{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+  .stab div{padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:13px;color:var(--muted)}
+  .stab b{display:block;color:var(--ink);font-size:16px;margin-top:2px;font-variant-numeric:tabular-nums}
+  .ok{color:var(--good)!important} .bad{color:var(--std)!important}
+  .cite{margin-top:16px;font-size:13px;color:var(--faint)}
+
+  @media (max-width: 960px){
+    .sim{grid-template-columns:1fr}
+    .controls{position:static;order:2}
+    .metrics{grid-template-columns:1fr 1fr}
+    .metrics .metric:first-child{grid-column:1/-1}
   }
-  @media (max-width: 560px){
-    .row,.row:has(input[type=range]){grid-template-columns:1fr}
-    .row span{text-align:left}
+  @media (max-width: 720px){
+    .steps,.charts,.stab{grid-template-columns:1fr}
+    .viz canvas{height:300px}
+    .hero p{font-size:16px}
+  }
+  @media (max-width: 480px){
+    .metrics{grid-template-columns:1fr}
+    .eq-row{grid-template-columns:1fr}
   }
 </style>
 </head>
 <body>
-<header>
-  <h1>Interactive Simulation — Standard vs DSR (Object Transport using Robot Networks)</h1>
-  <a href="https://arxiv.org/pdf/2102.09056" target="_blank" class="paper-link">View ACC2021 Paper (arXiv:2102.09056)</a>
-  <div class="note">Models from Gombo, Tiwari, Devasia (ACC2021 Paper). Update laws:<br>
-    <span class="pill">Standard</span> Y[m+1] = (I − γ δt K) Y[m] + γ δt B y<sub>d</sub>[m]
-    &nbsp; | &nbsp;
-    <span class="pill">DSR</span> Y[m+1] = Y[m] − αβ δt K Y[m] + αβ δt B y<sub>d</sub>[m] + [I − βK](Y[m] − Y[m−1])
-  </div>
-</header>
-<div class="container">
-  <div class="card panel">
-    <div class="controls">
-      <div class="row"><label>Agents (n)</label><input id="n" type="number" min="2" max="200" value="20"></div>
-      <div class="row"><label>Topology</label>
-        <select id="topo">
-          <option value="line">Line (neighbors i±1)</option>
-          <option value="ring">Ring</option>
-          <option value="complete">Complete</option>
-        </select>
-      </div>
-      <div class="row"><label>Neighbor stiffness (s)</label><input id="stiff" type="range" min="0" max="10" step="0.05" value="1"><span id="stiff_v">1.00</span></div>
-      <div class="row"><label>Pin (leader) stiffness (kₚ)</label><input id="kpin" type="range" min="0" max="10" step="0.1" value="2"><span id="kpin_v">2.0</span></div>
-      <div class="row"><label>Leaders (first L agents)</label><input id="leaders" type="number" min="1" max="50" value="1"></div>
-      <hr/>
-      <div class="row"><label>δt (time step)</label><input id="dt" type="range" min="0.001" max="0.2" step="0.001" value="0.03"><span id="dt_v">0.030</span></div>
-      <div class="row"><label>γ (standard)</label><input id="gamma" type="range" min="0" max="5" step="0.01" value="1.0"><span id="gamma_v">1.00</span></div>
-      <div class="row"><label>α (DSR)</label><input id="alpha" type="range" min="0" max="5" step="0.01" value="1.0"><span id="alpha_v">1.00</span></div>
-      <div class="row"><label>β (DSR)</label><input id="beta" type="range" min="0" max="2" step="0.005" value="0.5"><span id="beta_v">0.500</span></div>
-      <div class="row"><label>Initial offset y(0)</label><input id="y0" type="range" min="0" max="2" step="0.01" value="0"><span id="y0_v">0.00</span></div>
-      <hr/>
-      <div class="row"><label>Desired input type</label>
-        <select id="ydType">
-          <option value="step">Step</option>
-          <option value="ramp">Ramp</option>
-          <option value="sine">Sine</option>
-        </select>
-      </div>
-      <div class="row"><label>Step amplitude / Ramp rate / Sine amp</label><input id="ydA" type="range" min="0" max="5" step="0.05" value="1"><span id="ydA_v">1.00</span></div>
-      <div class="row"><label>Sine frequency (Hz)</label><input id="ydF" type="range" min="0" max="2" step="0.01" value="0.20"><span id="ydF_v">0.20</span></div>
+<div class="wrap">
 
-      <div class="row"><label>Simulation time (s)</label><input id="tmax" type="number" min="0.1" max="1000" step="0.1" value="10"></div>
+  <!-- Hero -->
+  <header class="hero">
+    <div class="eyebrow">Interactive research demo · ACC 2021</div>
+    <h1>Keeping robot teams in formation with Delayed Self-Reinforcement</h1>
+    <p>When a team of robots carries a flexible object, only the leader knows where to go. Everyone else follows by reacting to their neighbours, and that lag lets the object stretch and bend. <b>DSR</b> lets each robot also reinforce its own most recent motion, using information it already has, so the whole team moves together without extra communication.</p>
+    <div class="hero-actions">
+      <button class="btn primary" id="heroPlay" type="button">▶ Run the simulation</button>
+      <a class="btn" href="https://arxiv.org/pdf/2102.09056" target="_blank" rel="noopener">Read the paper ↗</a>
+    </div>
+  </header>
 
-      <div class="btns">
-        <button id="run">▶ Run</button>
-        <button id="pause">⏸ Pause</button>
-        <button id="reset">↺ Reset</button>
-        <button id="randomize">🎲 Random Y(0)</button>
+  <!-- How it works -->
+  <section class="section">
+    <div class="section-head">
+      <h2>How it works</h2>
+      <p>Same robots, same target, two ways of following.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="n">1</div>
+        <h3>The setup</h3>
+        <p>A chain of robots holds a flexible object. The leader is told the target position; followers only sense their immediate neighbours.</p>
       </div>
-      <div class="note" id="stabilityNote">—</div>
-    </div>
-  </div>
-  <div class="card panel">
-    <div class="grid">
-      <div class="card panel">
-        <h3 style="margin:0 0 8px 0;color:var(--muted)">Agent States (index vs y)</h3>
-        <!-- keep same canvas attributes so layout unchanged -->
-        <canvas id="canvasAgents" width="900" height="260"></canvas>
-        <div class="note">Red: Standard • Blue: DSR • Grey line shows desired y<sub>d</sub></div>
+      <div class="step s-std">
+        <div class="n">2</div>
+        <h3><span class="std">Standard</span> approach</h3>
+        <p>Each robot moves toward its neighbours. The command trickles down the chain slowly, so the object gets stretched while the team catches up.</p>
       </div>
-      <div class="card panel">
-        <h3 style="margin:0 0 8px 0;color:var(--muted)">Deformation & Tracking (history)</h3>
-        <canvas id="canvasHist" width="900" height="260"></canvas>
-        <div class="note">Tracks max deformation D = max(y) − min(y) and worst-case tracking error max<sub>k</sub>|y<sub>k</sub> − y<sub>d</sub>| for both methods.</div>
+      <div class="step s-dsr">
+        <div class="n">3</div>
+        <h3>With <span class="dsr">DSR</span></h3>
+        <p>Each robot adds a term based on its own previous update. Information effectively travels faster, so the team moves as a unit with far less deformation.</p>
       </div>
     </div>
-    <!-- Time vs positions panel -->
-    <div class="card panel" style="margin-top:12px">
-      <h3 style="margin:0 0 8px 0;color:var(--muted)">Time vs Agent Positions</h3>
-      <canvas id="canvasTime" width="900" height="260"></canvas>
-      <div class="note">Thin traces: per-agent; Bold traces: mean across agents (Std & DSR).</div>
+  </section>
+
+  <!-- Simulator -->
+  <section class="section" id="simulator" style="padding-top:0">
+    <div class="section-head">
+      <h2>Try it yourself</h2>
+      <p><b>Deformation</b> = gap between the highest and lowest robot. Lower is better.</p>
     </div>
-    <div class="metrics" style="margin-top:12px">
-      <div class="metric"><h3>λ<sub>max</sub>(K)</h3><div class="val" id="lamMax">—</div></div>
-      <div class="metric"><h3>Standard stability</h3><div class="val" id="stdStable">—</div><div class="note">Requires 0 &lt; γ·δt &lt; 2/λ<sub>max</sub></div></div>
-      <div class="metric"><h3>DSR stability bound</h3><div class="val" id="dsrBound">—</div><div class="note">β &lt; 4 / (λ<sub>max</sub>(α·δt + 2))</div></div>
-      <div class="metric"><h3>Max deformation (min so far)</h3><div class="val" id="defMetric">—</div></div>
-      <div class="metric"><h3>Worst-case tracking error</h3><div class="val" id="trackMetric">—</div></div>
-      <div class="metric"><h3>Settling time estimate</h3><div class="val" id="settle">—</div><div class="note">When max |y−y<sub>d</sub>| ≤ ε (ε=0.02·stepAmp) for 1s</div></div>
+
+    <div class="sim">
+      <!-- Controls -->
+      <aside class="panel controls" aria-label="Simulation settings">
+        <div class="group">
+          <div class="group-title">Leader's target</div>
+          <div class="chips" role="group" aria-label="Target motion">
+            <button class="chip" type="button" data-yd="step" aria-pressed="true">Step</button>
+            <button class="chip" type="button" data-yd="ramp" aria-pressed="false">Ramp</button>
+            <button class="chip" type="button" data-yd="sine" aria-pressed="false">Wave</button>
+          </div>
+          <div class="hint" id="ydHint" style="margin-bottom:14px">Jump to a new position and hold it.</div>
+          <div class="field">
+            <div class="field-top"><label for="ydA" id="ydALabel">Step size</label><span class="val" id="ydA_v"></span></div>
+            <input id="ydA" type="range" min="0.1" max="5" step="0.05" value="1">
+          </div>
+          <div class="field" id="ydFField" hidden>
+            <div class="field-top"><label for="ydF">Wave frequency (Hz)</label><span class="val" id="ydF_v"></span></div>
+            <input id="ydF" type="range" min="0.02" max="1" step="0.01" value="0.10">
+          </div>
+          <div class="field">
+            <div class="field-top"><label for="tmax">Duration (s)</label></div>
+            <input id="tmax" type="number" min="1" max="200" step="1" value="20">
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-title">Robot team</div>
+          <div class="field">
+            <div class="field-top"><label for="n">Number of robots</label><span class="val" id="n_v"></span></div>
+            <input id="n" type="range" min="3" max="40" step="1" value="10">
+          </div>
+          <div class="two">
+            <div class="field">
+              <div class="field-top"><label for="topo">Network</label></div>
+              <select id="topo">
+                <option value="line">Chain</option>
+                <option value="ring">Ring</option>
+                <option value="complete">All-to-all</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="leaders">Leaders</label></div>
+              <input id="leaders" type="number" min="1" max="40" value="1">
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <details class="adv">
+            <summary>Advanced gains</summary>
+            <label class="check"><input type="checkbox" id="matchGain" checked> <span>Fair comparison: keep α·β = γ so both methods use the same overall gain</span></label>
+            <div class="field">
+              <div class="field-top"><label for="gamma">γ — standard gain</label><span class="val" id="gamma_v"></span></div>
+              <input id="gamma" type="range" min="0.05" max="5" step="0.05" value="1">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="beta">β — DSR reinforcement</label><span class="val" id="beta_v"></span></div>
+              <input id="beta" type="range" min="0.01" max="1" step="0.01" value="0.4">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="alpha">α — DSR gain</label><span class="val" id="alpha_v"></span></div>
+              <input id="alpha" type="range" min="0.05" max="40" step="0.05" value="2.5">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="stiff">Neighbour stiffness s</label><span class="val" id="stiff_v"></span></div>
+              <input id="stiff" type="range" min="0.1" max="5" step="0.05" value="1">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="kpin">Leader pin stiffness kₚ</label><span class="val" id="kpin_v"></span></div>
+              <input id="kpin" type="range" min="0.1" max="10" step="0.1" value="2">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="dt">Time step δt</label><span class="val" id="dt_v"></span></div>
+              <input id="dt" type="range" min="0.005" max="0.1" step="0.001" value="0.03">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="y0">Initial position y(0)</label><span class="val" id="y0_v"></span></div>
+              <input id="y0" type="range" min="-2" max="2" step="0.05" value="0">
+            </div>
+            <button class="btn sm" id="restoreDefaults" type="button">Restore defaults</button>
+          </details>
+        </div>
+      </aside>
+
+      <!-- Stage -->
+      <div class="stage">
+        <div class="panel">
+          <div class="toolbar">
+            <button class="btn primary sm" id="run" type="button">▶ Play</button>
+            <button class="btn sm" id="reset" type="button">↺ Reset</button>
+            <button class="btn sm" id="randomize" type="button" title="Start robots from random positions">Scramble start</button>
+            <select id="speed" class="speed" aria-label="Playback speed">
+              <option value="1">1×</option>
+              <option value="2" selected>2×</option>
+              <option value="4">4×</option>
+              <option value="8">8×</option>
+            </select>
+            <div class="progress"><div class="bar"><i id="progBar"></i></div><span id="progTxt">0.0 / 20 s</span></div>
+          </div>
+          <div class="viz"><canvas id="canvasAgents" aria-label="Robot formation for standard and DSR methods"></canvas></div>
+          <div class="alert" id="stabAlert"><span id="stabMsg"></span><button class="btn sm" id="fixBeta" type="button">Fix it</button></div>
+          <div class="legend">
+            <span><i class="sw dot" style="background:var(--ink)"></i>Leader</span>
+            <span><i class="sw dot" style="border:2px solid var(--muted)"></i>Follower robot</span>
+            <span><i class="sw" style="height:6px;background:var(--line-2)"></i>Flexible object</span>
+            <span><i class="sw dash"></i>Leader's target</span>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="panel metric">
+            <h3>DSR deformation vs standard</h3>
+            <div class="headline" id="headline">—</div>
+            <div class="sub" id="headlineSub">Press play to compare the average deformation over the run.</div>
+          </div>
+          <div class="panel metric">
+            <h3>Average deformation</h3>
+            <div class="cmp">
+              <div class="cmp-row"><b class="std">Standard</b><div class="track"><i id="avgDStdBar" style="background:var(--std)"></i></div><span class="num" id="avgDStd">—</span></div>
+              <div class="cmp-row"><b class="dsr">DSR</b><div class="track"><i id="avgDDsrBar" style="background:var(--dsr)"></i></div><span class="num" id="avgDDsr">—</span></div>
+            </div>
+          </div>
+          <div class="panel metric">
+            <h3>Average tracking error</h3>
+            <div class="cmp">
+              <div class="cmp-row"><b class="std">Standard</b><div class="track"><i id="avgEStdBar" style="background:var(--std)"></i></div><span class="num" id="avgEStd">—</span></div>
+              <div class="cmp-row"><b class="dsr">DSR</b><div class="track"><i id="avgEDsrBar" style="background:var(--dsr)"></i></div><span class="num" id="avgEDsr">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="charts">
+          <div class="panel chart">
+            <h3>Deformation over time</h3>
+            <p>How much the object is stretched at each moment.</p>
+            <canvas id="canvasHist"></canvas>
+            <div class="legend">
+              <span><i class="sw" style="background:var(--std)"></i>Standard</span>
+              <span><i class="sw" style="background:var(--dsr)"></i>DSR</span>
+            </div>
+          </div>
+          <div class="panel chart">
+            <h3>Robot positions over time</h3>
+            <p>Thin: each robot. Bold: team average.</p>
+            <canvas id="canvasTime"></canvas>
+            <div class="legend">
+              <span><i class="sw" style="background:var(--std)"></i>Standard</span>
+              <span><i class="sw" style="background:var(--dsr)"></i>DSR</span>
+              <span><i class="sw dash"></i>Target</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Math -->
+  <section class="section" style="padding-top:0">
+    <details class="panel math">
+      <summary>The math behind it</summary>
+      <div class="eq">
+        <div class="eq-row"><span class="tag std">Standard</span><code>Y[m+1] = (I − γ δt K) Y[m] + γ δt B y<sub>d</sub>[m]</code></div>
+        <div class="eq-row"><span class="tag dsr">DSR</span><code>Y[m+1] = Y[m] − αβ δt K Y[m] + αβ δt B y<sub>d</sub>[m] + (I − βK)(Y[m] − Y[m−1])</code></div>
+      </div>
+      <ul>
+        <li><b>Y</b> stacks every robot's position; <b>K</b> is the pinned graph Laplacian (neighbour stiffness <i>s</i> plus leader pin <i>kₚ</i>); <b>B</b> feeds the target y<sub>d</sub> to the leaders.</li>
+        <li>The extra DSR term <code>(I − βK)(Y[m] − Y[m−1])</code> reuses each robot's last update, so no additional communication is needed.</li>
+        <li>Stability needs 0 &lt; γ·δt &lt; 2/λ<sub>max</sub>(K) for standard, and β &lt; 4 / (λ<sub>max</sub>(K)(α·δt + 2)) for DSR.</li>
+      </ul>
+      <div class="stab">
+        <div>λ<sub>max</sub>(K)<b id="lamMax">—</b></div>
+        <div>Standard stability<b id="stdStable">—</b></div>
+        <div>DSR bound on β<b id="dsrBound">—</b></div>
+      </div>
+      <div class="cite">Y. Gombo, A. Tiwari, S. Devasia, American Control Conference (ACC) 2021. <a href="https://arxiv.org/abs/2102.09056" target="_blank" rel="noopener">arXiv:2102.09056</a></div>
+    </details>
+  </section>
 </div>
+
 <script>
 (function(){
   const el = id => document.getElementById(id);
-  const nEl = el('n'), topoEl = el('topo'), stiffEl = el('stiff'), kpinEl = el('kpin'), leadersEl = el('leaders');
-  const dtEl = el('dt'), gammaEl = el('gamma'), alphaEl = el('alpha'), betaEl = el('beta'), y0El = el('y0');
-  const ydTypeEl = el('ydType'), ydAEl = el('ydA'), ydFEl = el('ydF'), tmaxEl = el('tmax');
-  const canvasAgents = el('canvasAgents'), ctxA = canvasAgents.getContext('2d');
-  const canvasHist = el('canvasHist'), ctxH = canvasHist.getContext('2d');
-  const canvasTime = el('canvasTime'), ctxT = canvasTime.getContext('2d');
-  const stiffV = el('stiff_v'), kpinV = el('kpin_v'), dtV = el('dt_v'), gammaV = el('gamma_v'), alphaV = el('alpha_v'), betaV = el('beta_v'), ydAV = el('ydA_v'), ydFV = el('ydF_v'), y0V = el('y0_v');
-  const lamMaxEl = el('lamMax'), stdStableEl = el('stdStable'), dsrBoundEl = el('dsrBound'), stabilityNote = el('stabilityNote');
-  const defMetricEl = el('defMetric'), trackMetricEl = el('trackMetric'), settleEl = el('settle');
-  const colors = {
-    axis: '#333333',
-    text: '#a3a3a3',
-    desired: '#737373',
-    std: '#ef4444',
-    stdSoft: '#ef444488',
-    dsr: '#3b82f6',
-    dsrSoft: '#3b82f688',
-    stdErr: '#f87171',
-    dsrErr: '#60a5fa'
+  const css = getComputedStyle(document.documentElement);
+  const C = {
+    std: css.getPropertyValue('--std').trim(), dsr: css.getPropertyValue('--dsr').trim(),
+    ink: '#f5f5f5', muted: '#a3a3a3', faint: '#737373', grid: '#2a2a2a', axis: '#3a3a3a',
+    surface: '#1f1f1f', object: 'rgba(212,212,212,.16)'
   };
+  const DEFAULTS = { gamma:1, beta:0.4, alpha:2.5, stiff:1, kpin:2, dt:0.03, y0:0 };
 
-  function fmt(x, d=3){ return (Math.abs(x) < 1e-12 ? 0 : x).toFixed(d); }
+  const inputs = ['n','topo','leaders','stiff','kpin','dt','gamma','alpha','beta','y0','ydA','ydF','tmax'].reduce((o,k)=>(o[k]=el(k),o),{});
+  const matchGain = el('matchGain');
+  let ydType = 'step';
 
-  // State & params
-  let N = parseInt(nEl.value,10);
-  let topo = topoEl.value;
-  let s = parseFloat(stiffEl.value);
-  let kp = parseFloat(kpinEl.value);
-  let L = parseInt(leadersEl.value,10);
-  let dt = parseFloat(dtEl.value);
-  let gamma = parseFloat(gammaEl.value);
-  let alpha = parseFloat(alphaEl.value);
-  let beta = parseFloat(betaEl.value);
-  let y0 = parseFloat(y0El.value);
-  let ydType = ydTypeEl.value, ydA = parseFloat(ydAEl.value), ydF = parseFloat(ydFEl.value);
-  let Tmax = parseFloat(tmaxEl.value);
-
+  // ---------- Model ----------
+  let N, topo, s, kp, L, dt, gamma, alpha, beta, y0, ydA, ydF, Tmax;
   let K, B, lamMax;
-  let t = 0, step = 0;
-  let Y_std = [], Y_dsr = [], Yprev_dsr = [], Y0_std = [], Y0_dsr = [];
-  let running = false;
+  let t = 0, step = 0, running = false, done = false;
+  let Y_std = [], Y_dsr = [], Yprev_dsr = [];
+  let hist, acc;
+  let yLo = -1, yHi = 1;
 
-  const histLen = 2000;
-  let hist = {D_std:[], D_dsr:[], E_std:[], E_dsr:[], T:[], Y_std:[], Y_dsr:[], Yd:[]};
-  let best = {D_std: -Infinity, D_dsr: -Infinity, E_std: Infinity, E_dsr: Infinity};
+  const fmt = (x, d=2) => (Math.abs(x) < 1e-12 ? 0 : x).toFixed(d);
 
-  // Fixed y-axis range for figure 1 (computed at rebuild and kept constant while sim runs)
-  let yAxisMin = -1, yAxisMax = 1;
-
-  // Build pinned Laplacian K and B vector
-  function buildKB(){
-    K = Array(N).fill(0).map(()=>Array(N).fill(0));
-    B = Array(N).fill(0);
-    const leaders = new Set(Array.from({length:Math.max(1, Math.min(L,N))}, (_,i)=>i)); // first L agents are leaders
-    // Graph stiffness
-    function connect(i,j){ if(i===j) return; K[i][i]+=s; K[j][j]+=s; K[i][j]-=s; K[j][i]-=s; }
-    if (topo==='line' || topo==='ring'){
-      for(let i=0;i<N-1;i++) connect(i,i+1);
-      if (topo==='ring') connect(0,N-1);
-    } else if (topo==='complete'){
-      for(let i=0;i<N;i++) for(let j=i+1;j<N;j++) connect(i,j);
-    }
-    // Pinning
-    leaders.forEach(k=>{ K[k][k]+=kp; B[k]=kp; });
-    // Estimate largest eigenvalue via power iteration (symmetric, positive semidef)
-    lamMax = powerIterMaxEig(K);
-    if(!isFinite(lamMax) || lamMax<=0) lamMax = 1e-6;
-  }
+  function mulMatVec(M, v){ const n=M.length, r=new Array(n); for(let i=0;i<n;i++){ let q=0; const Mi=M[i]; for(let j=0;j<n;j++) q+=Mi[j]*v[j]; r[i]=q; } return r; }
+  function dot(a,b){ let q=0; for(let i=0;i<a.length;i++) q+=a[i]*b[i]; return q; }
 
   function powerIterMaxEig(M){
-    const n=M.length; let v=Array(n).fill(0).map(()=>Math.random());
-    let norm = Math.hypot(...v); if(norm===0) norm = 1; v=v.map(x=>x/norm);
-    let lambda=0;
-    for(let it=0; it<120; it++){
-      const w = mulMatVec(M, v);
-      const nrm = Math.hypot(...w) || 1e-9;
-      v = w.map(x=>x/nrm);
-      const num = dot(v, mulMatVec(M,v));
-      const den = dot(v,v) || 1e-9;
-      lambda = num/den;
+    const n=M.length; let v=Array.from({length:n},()=>Math.random()+0.1);
+    let nrm=Math.hypot(...v)||1; v=v.map(x=>x/nrm); let lambda=0;
+    for(let it=0; it<150; it++){
+      const w=mulMatVec(M,v); const wn=Math.hypot(...w)||1e-9;
+      v=w.map(x=>x/wn); lambda=dot(v,mulMatVec(M,v));
     }
     return lambda;
   }
 
-  function mulMatVec(M, v){ const n=M.length; const r=Array(n).fill(0); for(let i=0;i<n;i++){ let s=0; const Mi=M[i]; for(let j=0;j<n;j++) s+=Mi[j]*v[j]; r[i]=s; } return r; }
-  function addVec(a,b){ return a.map((x,i)=>x+b[i]); }
-  function subVec(a,b){ return a.map((x,i)=>x-b[i]); }
-  function scalVec(a,c){ return a.map(x=>x*c); }
-  function dot(a,b){ let s=0; for(let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
-  function max(a){ return Math.max.apply(null,a); }
-  function min(a){ return Math.min.apply(null,a); }
-  function maxAbs(a){ let m=0; for(let i=0;i<a.length;i++){ const q=Math.abs(a[i]); if(q>m)m=q; } return m; }
-
-  // compute expected maximum desired over the sim horizon (used to set fixed y-axis)
-  function expectedMaxDesired(){
-    if (ydType==='step') return Math.abs(ydA);
-    if (ydType==='sine') return Math.abs(ydA);
-    if (ydType==='ramp') return Math.abs(ydA) * Math.max(1, Tmax); // ydA is ramp rate; over Tmax
-    return Math.abs(ydA);
+  function buildKB(){
+    K = Array.from({length:N},()=>new Array(N).fill(0));
+    B = new Array(N).fill(0);
+    const connect=(i,j)=>{ if(i===j) return; K[i][i]+=s; K[j][j]+=s; K[i][j]-=s; K[j][i]-=s; };
+    if (topo==='line'||topo==='ring'){ for(let i=0;i<N-1;i++) connect(i,i+1); if(topo==='ring'&&N>2) connect(0,N-1); }
+    else for(let i=0;i<N;i++) for(let j=i+1;j<N;j++) connect(i,j);
+    for(let k=0;k<L;k++){ K[k][k]+=kp; B[k]=kp; }
+    lamMax = powerIterMaxEig(K);
+    if(!isFinite(lamMax)||lamMax<=0) lamMax=1e-6;
   }
 
   function desired(m){
-    const time = m*dt;
-    if (ydType==='step') return ydA; // constant step at t>=0
+    const time=m*dt;
     if (ydType==='ramp') return ydA*time;
     if (ydType==='sine') return ydA*Math.sin(2*Math.PI*ydF*time);
-    return 0;
+    return ydA;
   }
 
-  function resetStates(){
-    Y_std = Array(N).fill(y0);
-    Y_dsr = Array(N).fill(y0);
-    Yprev_dsr = Array(N).fill(y0);
-    Y0_std = Y_std.slice();
-    Y0_dsr = Y_dsr.slice();
-    t=0; step=0;
-    hist = {D_std:[], D_dsr:[], E_std:[], E_dsr:[], T:[], Y_std:[], Y_dsr:[], Yd:[]};
-    best={D_std:Infinity,D_dsr:Infinity,E_std:Infinity,E_dsr:Infinity};
+  function computeAxis(){
+    let hi, lo;
+    if (ydType==='step'){ hi=ydA; lo=0; }
+    else if (ydType==='ramp'){ hi=ydA*Tmax; lo=0; }
+    else { hi=ydA; lo=-ydA; }
+    hi=Math.max(hi,y0,0.5); lo=Math.min(lo,y0);
+    const pad=(hi-lo)*0.3; yLo=lo-pad*0.6; yHi=hi+pad;
   }
 
-  function stabilityStatus(){
-    const condStd = gamma < (2/(dt*lamMax)) && gamma > 0;
-    const betaMax = 4 / (lamMax*(alpha*dt + 2));
-    const condDSR = (alpha>0) && (beta>0) && (beta < betaMax);
-    lamMaxEl.textContent = fmt(lamMax,3);
-    stdStableEl.innerHTML = condStd ? '<span class="pill">OK</span>' : `<span class="pill bad">violated</span> (γ·δt = ${fmt(gamma*dt,3)})`;
-    dsrBoundEl.innerHTML = (alpha>0 ? `β< ${fmt(betaMax,3)} (now β=${fmt(beta,3)})` : 'α must be > 0');
-    stabilityNote.innerHTML = (!condStd?'<div class="bad">Standard may be unstable.</div>':'') + (!condDSR?'<div class="warn">DSR bound violated — simulation may diverge.</div>':'');
+  function freshHist(){
+    hist={T:[],D_std:[],D_dsr:[],Y_std:[],Y_dsr:[],Yd:[]};
+    acc={D_std:0,D_dsr:0,E_std:0,E_dsr:0,n:0};
+  }
+
+  function resetStates(start){
+    Y_std = start ? start.slice() : new Array(N).fill(y0);
+    Y_dsr = Y_std.slice(); Yprev_dsr = Y_std.slice();
+    t=0; step=0; done=false; freshHist();
   }
 
   function stepOnce(){
-    // common
-    const yd = desired(step);
-    const KY_std = mulMatVec(K, Y_std);
-    const KY_dsr = mulMatVec(K, Y_dsr);
+    const yd=desired(step);
+    const KY_std=mulMatVec(K,Y_std), KY_dsr=mulMatVec(K,Y_dsr);
+    const nStd=new Array(N);
+    for(let i=0;i<N;i++) nStd[i]=Y_std[i]-gamma*dt*KY_std[i]+gamma*dt*B[i]*yd;
+    const dY=new Array(N); for(let i=0;i<N;i++) dY[i]=Y_dsr[i]-Yprev_dsr[i];
+    const KdY=mulMatVec(K,dY), ab=alpha*beta*dt, nDsr=new Array(N);
+    for(let i=0;i<N;i++) nDsr[i]=Y_dsr[i]-ab*KY_dsr[i]+ab*B[i]*yd+dY[i]-beta*KdY[i];
+    Y_std=nStd; Yprev_dsr=Y_dsr; Y_dsr=nDsr;
+    step++; t=step*dt;
 
-    // Standard: Y+ = (I - γ dt K) Y + γ dt B yd
-    let Ynext_std = Array(N);
+    const ydNow=desired(step);
+    let sMax=-Infinity,sMin=Infinity,dMax=-Infinity,dMin=Infinity,eS=0,eD=0;
     for(let i=0;i<N;i++){
-      Ynext_std[i] = Y_std[i] - gamma*dt*KY_std[i] + gamma*dt*B[i]*yd;
+      const a=Y_std[i], b=Y_dsr[i];
+      if(a>sMax)sMax=a; if(a<sMin)sMin=a; if(b>dMax)dMax=b; if(b<dMin)dMin=b;
+      eS=Math.max(eS,Math.abs(a-ydNow)); eD=Math.max(eD,Math.abs(b-ydNow));
     }
-
-    // DSR: Y+ = Y − αβ dt K Y + αβ dt B yd + (I − βK)(Y − Yprev)
-    let Yminus = subVec(Y_dsr, Yprev_dsr);
-    const KYminus = mulMatVec(K, Yminus);
-    let Ynext_dsr = Array(N);
-    for(let i=0;i<N;i++){
-      const term1 = Y_dsr[i] - (alpha*beta*dt)*KY_dsr[i] + (alpha*beta*dt)*B[i]*yd;
-      const term2 = Yminus[i] - beta*KYminus[i];
-      Ynext_dsr[i] = term1 + term2;
-    }
-
-    // Update
-    Y_std = Ynext_std;
-    Yprev_dsr = Y_dsr;
-    Y_dsr = Ynext_dsr;
-
-    // Metrics
-    const D_std = max(Y_std) - min(Y_std);
-    const D_dsr = max(Y_dsr) - min(Y_dsr);
-    const E_std = maxAbs(Y_std.map(y=>y-yd));
-    const E_dsr = maxAbs(Y_dsr.map(y=>y-yd));
-
-    hist.D_std.push(D_std); hist.D_dsr.push(D_dsr);
-    hist.E_std.push(E_std); hist.E_dsr.push(E_dsr);
-    hist.T.push(t);
-    // store full state snapshots
-    hist.Y_std.push([...Y_std]);
-    hist.Y_dsr.push([...Y_dsr]);
-    hist.Yd.push(yd);
-
-    if(hist.T.length>histLen){ ['D_std','D_dsr','E_std','E_dsr','T','Y_std','Y_dsr','Yd'].forEach(k=>hist[k].shift()); }
-
-    best.D_std = Math.max(best.D_std, D_std);
-    best.D_dsr = Math.max(best.D_dsr, D_dsr);
-    best.E_std = Math.min(best.E_std, E_std);
-    best.E_dsr = Math.min(best.E_dsr, E_dsr);
-
-    // Settling time estimate when both methods within epsilon for 1s
-    const eps = 0.02 * (ydType==='step'? ydA : (ydType==='ramp'? Math.max(ydA*dt*step, 1) : Math.max(ydA,1)));
-    const windowSteps = Math.max(1, Math.round(1/dt));
-    let tsStd = '—', tsDsr = '—';
-    if (hist.E_std.length>=windowSteps){
-      const okStd = hist.E_std.slice(-windowSteps).every(v=>v<=eps);
-      const okDsr = hist.E_dsr.slice(-windowSteps).every(v=>v<=eps);
-      if (okStd) tsStd = (t).toFixed(2)+' s';
-      if (okDsr) tsDsr = (t).toFixed(2)+' s';
-    }
-    settleEl.innerHTML = `Std: ${tsStd} &nbsp; | &nbsp; DSR: ${tsDsr}`;
-
-    defMetricEl.innerHTML = `Std max: ${fmt(best.D_std,3)} &nbsp; | &nbsp; DSR max: ${fmt(best.D_dsr,3)}`;
-    trackMetricEl.innerHTML = `Std min: ${fmt(best.E_std,3)} &nbsp; | &nbsp; DSR min: ${fmt(best.E_dsr,3)}`;
-
-    // Draw
-    drawAgents(yd);
-    drawHistory();
-    drawTimeSeries();
-
-    // time
-    step++; t += dt;
+    const Ds=sMax-sMin, Dd=dMax-dMin;
+    acc.D_std+=Ds; acc.D_dsr+=Dd; acc.E_std+=eS; acc.E_dsr+=eD; acc.n++;
+    hist.T.push(t); hist.D_std.push(Ds); hist.D_dsr.push(Dd);
+    hist.Y_std.push(Y_std); hist.Y_dsr.push(Y_dsr); hist.Yd.push(ydNow);
   }
 
-  function drawAgents(yd){
-    const w = canvasAgents.width, h = canvasAgents.height; ctxA.clearRect(0,0,w,h);
-    // Axes
-    ctxA.globalAlpha = 1; ctxA.lineWidth=1; ctxA.strokeStyle = colors.axis;
-    ctxA.beginPath(); ctxA.moveTo(40, h-30); ctxA.lineTo(w-10, h-30); ctxA.stroke(); // x-axis
-    ctxA.beginPath(); ctxA.moveTo(40, 10); ctxA.lineTo(40, h-30); ctxA.stroke(); // y-axis
+  // ---------- Canvas helpers ----------
+  const canvases = {};
+  function setupCanvas(id){
+    const c=el(id), ctx=c.getContext('2d');
+    const o={c,ctx,w:0,h:0};
+    o.fit=()=>{ const r=c.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+      o.w=r.width; o.h=r.height; c.width=Math.round(r.width*dpr); c.height=Math.round(r.height*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); };
+    o.fit(); canvases[id]=o; return o;
+  }
+  const A=setupCanvas('canvasAgents'), H=setupCanvas('canvasHist'), T=setupCanvas('canvasTime');
 
-    // Use fixed y-axis computed at rebuild()
-    let yMin = yAxisMin, yMax = yAxisMax;
-    if (yMax===yMin){ yMax = yMin+1; }
-    const x0=50, x1=w-20, y0=h-40, y1=20; // plot area
-    const xn = i=> x0 + (x1-x0) * (i/(Math.max(1,N-1)));
-    const yn = y=> y0 - (y0-y1)*((y - yMin)/(yMax - yMin));
+  function niceTicks(lo,hi,count){
+    const span=hi-lo||1, raw=span/count, mag=Math.pow(10,Math.floor(Math.log10(raw)));
+    const stepSz=[1,2,2.5,5,10].map(m=>m*mag).find(x=>x>=raw)||raw;
+    const out=[]; for(let v=Math.ceil(lo/stepSz)*stepSz; v<=hi+1e-9; v+=stepSz) out.push(+v.toFixed(10));
+    return out;
+  }
 
-    // draw y ticks (5 ticks)
-    ctxA.fillStyle = colors.text; ctxA.font = '11px system-ui';
-    for(let k=0;k<=4;k++){
-      const val = yMin + (yMax-yMin)*(k/4);
-      const yPos = yn(val);
-      ctxA.fillText(fmt(val,2), 8, yPos+3);
-      ctxA.beginPath(); ctxA.moveTo(40-6, yPos); ctxA.lineTo(40, yPos); ctxA.stroke();
+  function yAxis(ctx, x0, x1, yn, lo, hi, count=4){
+    ctx.font='11px Inter,system-ui,sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    niceTicks(lo,hi,count).forEach(v=>{
+      const y=yn(v); ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+      ctx.fillStyle=C.faint; ctx.fillText(+v.toFixed(2), x0-8, y);
+    });
+  }
+
+  function xTimeAxis(ctx, x0, x1, y, xn){
+    ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillStyle=C.faint; ctx.font='11px Inter,system-ui,sans-serif';
+    niceTicks(0,Tmax,5).forEach(v=>{ ctx.fillText(v+'s', xn(v), y+6); });
+  }
+
+  // ---------- Formation view ----------
+  function drawLane(ctx, Y, color, label, top, bottom, left, right, yd, D){
+    const xn=i=>left+(right-left)*(N===1?0.5:i/(N-1));
+    const clampY=y=>Math.max(top-8, Math.min(bottom+8, y));
+    const yn=v=>clampY(bottom-(bottom-top)*((v-yLo)/(yHi-yLo)));
+
+    // lane frame
+    ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(left-14,bottom+0.5); ctx.lineTo(right+14,bottom+0.5); ctx.stroke();
+
+    // label
+    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    ctx.font='600 13px Inter,system-ui,sans-serif'; ctx.fillStyle=color; ctx.fillText(label, left-14, top-14);
+    ctx.font='12px Inter,system-ui,sans-serif'; ctx.fillStyle=C.muted;
+    const lw=ctx.measureText(label).width;
+    ctx.font='600 13px Inter,system-ui,sans-serif'; const lw2=ctx.measureText(label).width;
+    ctx.font='12px Inter,system-ui,sans-serif';
+    ctx.fillText('deformation '+fmt(D,2), left-14+Math.max(lw,lw2)+12, top-14);
+
+    // target
+    ctx.strokeStyle=C.faint; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(left-14,yn(yd)); ctx.lineTo(right+14,yn(yd)); ctx.stroke(); ctx.setLineDash([]);
+
+    // object: smooth band through robots
+    const pts=Y.map((v,i)=>[xn(i),yn(v)]);
+    const path=()=>{ ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+      for(let i=1;i<pts.length;i++){ const [px,py]=pts[i-1],[cx,cy]=pts[i]; const mx=(px+cx)/2; ctx.bezierCurveTo(mx,py,mx,cy,cx,cy); } };
+    if (topo==='line' || topo==='complete' || topo==='ring'){
+      ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.strokeStyle=C.object; ctx.lineWidth=10; path(); ctx.stroke();
+      ctx.strokeStyle=color; ctx.globalAlpha=.55; ctx.lineWidth=1.5; path(); ctx.stroke(); ctx.globalAlpha=1;
     }
 
-    // Desired line
-    ctxA.strokeStyle = colors.desired; ctxA.setLineDash([4,4]); ctxA.beginPath(); ctxA.moveTo(x0, yn(yd)); ctxA.lineTo(x1, yn(yd)); ctxA.stroke(); ctxA.setLineDash([]);
-
-    // Standard (blue)
-    ctxA.fillStyle = colors.std;
-    for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_std[i]); ctxA.beginPath(); ctxA.arc(x,y,3,0,Math.PI*2); ctxA.fill(); }
-    ctxA.strokeStyle = colors.stdSoft; ctxA.beginPath(); for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_std[i]); if(i===0) ctxA.moveTo(x,y); else ctxA.lineTo(x,y);} ctxA.stroke();
-
-    // DSR (green)
-    ctxA.fillStyle = colors.dsr;
-    for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_dsr[i]); ctxA.beginPath(); ctxA.arc(x,y,3,0,Math.PI*2); ctxA.fill(); }
-    ctxA.strokeStyle = colors.dsrSoft; ctxA.beginPath(); for(let i=0;i<N;i++){ const x=xn(i), y=yn(Y_dsr[i]); if(i===0) ctxA.moveTo(x,y); else ctxA.lineTo(x,y);} ctxA.stroke();
-
-    // Labels
-    ctxA.fillStyle = colors.text; ctxA.fillText('Index', (x0+x1)/2-15, h-10); ctxA.save(); ctxA.translate(12,(y0+y1)/2); ctxA.rotate(-Math.PI/2); ctxA.fillText('y', 0,0); ctxA.restore();
+    // robots
+    const r=Math.max(3.5, Math.min(8, (right-left)/N/3));
+    pts.forEach(([x,y],i)=>{
+      const leader=i<L;
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.fillStyle=leader?C.ink:C.surface; ctx.fill();
+      ctx.lineWidth=2; ctx.strokeStyle=leader?C.ink:color; ctx.stroke();
+    });
   }
+
+  function drawAgents(){
+    const {ctx,w,h}=A; ctx.clearRect(0,0,w,h);
+    const yd=desired(step);
+    const left=46, right=w-30, gap=46, top1=40, laneH=(h-top1-gap-16)/2;
+    const lastDs=hist.D_std.length?hist.D_std[hist.D_std.length-1]:Math.max(...Y_std)-Math.min(...Y_std);
+    const lastDd=hist.D_dsr.length?hist.D_dsr[hist.D_dsr.length-1]:Math.max(...Y_dsr)-Math.min(...Y_dsr);
+    drawLane(ctx, Y_std, C.std, 'Standard', top1, top1+laneH, left, right, yd, lastDs);
+    drawLane(ctx, Y_dsr, C.dsr, 'DSR', top1+laneH+gap, top1+2*laneH+gap, left, right, yd, lastDd);
+    ctx.textAlign='right'; ctx.textBaseline='alphabetic'; ctx.font='11px Inter,system-ui,sans-serif'; ctx.fillStyle=C.faint;
+    ctx.fillText('robot 1 (leader) → robot '+N, right+14, h-2);
+  }
+
+  // ---------- Charts ----------
+  function decim(len){ return Math.max(1, Math.ceil(len/500)); }
 
   function drawHistory(){
-    const w=canvasHist.width, h=canvasHist.height; ctxH.clearRect(0,0,w,h);
-    const x0=40, x1=w-10, y0=h-30, y1=18;
+    const {ctx,w,h}=H; ctx.clearRect(0,0,w,h);
+    const x0=40,x1=w-16,y0=h-22,y1=8;
+    let yMax=0.5; for(const v of hist.D_std) if(v>yMax&&isFinite(v)) yMax=v; for(const v of hist.D_dsr) if(v>yMax&&isFinite(v)) yMax=v;
+    yMax*=1.1;
+    const xn=tv=>x0+(x1-x0)*(tv/Tmax), yn=v=>y0-(y0-y1)*(Math.min(v,yMax)/yMax);
+    yAxis(ctx,x0,x1,yn,0,yMax); xTimeAxis(ctx,x0,x1,y0,xn);
     if(hist.T.length<2) return;
-
-    // vertical range
-    let yy = hist.D_std.concat(hist.D_dsr).concat(hist.E_std).concat(hist.E_dsr);
-    if(yy.length===0) return;
-    let yMin = 0; let yMax = Math.max(...yy); if(yMax<=0) yMax=1;
-
-    // FIXED x-axis: 0..Tmax
-    const xn = (tval)=> x0 + (x1-x0) * (tval/Tmax);
-    const yn = v => y0 - (y0-y1) * (v/(yMax));
-
-    // axes
-    ctxH.strokeStyle = colors.axis; ctxH.lineWidth=1;
-    ctxH.beginPath(); ctxH.moveTo(x0,y1); ctxH.lineTo(x0,y0); ctxH.lineTo(x1,y0); ctxH.stroke();
-
-    function drawLine(arr, color){
-      ctxH.strokeStyle=color; ctxH.beginPath();
-      arr.forEach((v,i)=>{ const x=xn(hist.T[i]); const y=yn(v); if(i===0) ctxH.moveTo(x,y); else ctxH.lineTo(x,y); });
-      ctxH.stroke();
-    }
-    drawLine(hist.D_std,colors.std); drawLine(hist.D_dsr,colors.dsr);
-    ctxH.setLineDash([6,4]); drawLine(hist.E_std,colors.stdErr); drawLine(hist.E_dsr,colors.dsrErr); ctxH.setLineDash([]);
-
-    // legend
-    ctxH.fillStyle = colors.text; ctxH.fillText('D (Std)', x1-120, y1+14); ctxH.fillStyle=colors.std; ctxH.fillRect(x1-145,y1+6,10,3);
-    ctxH.fillStyle = colors.text; ctxH.fillText('D (DSR)', x1-60, y1+14); ctxH.fillStyle=colors.dsr; ctxH.fillRect(x1-85,y1+6,10,3);
-    ctxH.fillStyle = colors.text; ctxH.fillText('E (Std)', x1-120, y1+30); ctxH.fillStyle=colors.stdErr; ctxH.fillRect(x1-145,y1+22,10,3);
-    ctxH.fillStyle = colors.text; ctxH.fillText('E (DSR)', x1-60, y1+30); ctxH.fillStyle=colors.dsrErr; ctxH.fillRect(x1-85,y1+22,10,3);
+    const k=decim(hist.T.length);
+    const area=(arr,color,fill)=>{
+      ctx.beginPath(); ctx.moveTo(xn(hist.T[0]),y0);
+      for(let i=0;i<arr.length;i+=k) ctx.lineTo(xn(hist.T[i]),yn(arr[i]));
+      ctx.lineTo(xn(hist.T[arr.length-1]),yn(arr[arr.length-1]));
+      ctx.lineTo(xn(hist.T[arr.length-1]),y0); ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+      ctx.beginPath(); for(let i=0;i<arr.length;i+=k){ const x=xn(hist.T[i]),y=yn(arr[i]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+      ctx.strokeStyle=color; ctx.lineWidth=2; ctx.stroke();
+    };
+    area(hist.D_std,C.std,'rgba(248,113,113,.12)');
+    area(hist.D_dsr,C.dsr,'rgba(96,165,250,.14)');
   }
 
-
   function drawTimeSeries(){
-    const w=canvasTime.width, h=canvasTime.height; ctxT.clearRect(0,0,w,h);
-    const x0=40, x1=w-10, y0=h-30, y1=20;
+    const {ctx,w,h}=T; ctx.clearRect(0,0,w,h);
+    const x0=40,x1=w-16,y0=h-22,y1=8;
+    // Grow the axis to fit overshoot (capped so a diverging run stays readable)
+    let lo=yLo, hi=yHi; const cap=(yHi-yLo)*1.5;
+    for(const arr of [hist.Y_std,hist.Y_dsr]) for(const row of arr) for(const v of row){ if(v>hi) hi=v; if(v<lo) lo=v; }
+    hi=Math.min(hi,yHi+cap); lo=Math.max(lo,yLo-cap);
+    const xn=tv=>x0+(x1-x0)*(tv/Tmax), yn=v=>y0-(y0-y1)*((Math.max(lo,Math.min(hi,v))-lo)/(hi-lo));
+    yAxis(ctx,x0,x1,yn,lo,hi); xTimeAxis(ctx,x0,x1,y0,xn);
     if(hist.T.length<2) return;
+    const k=decim(hist.T.length), len=hist.T.length;
+    ctx.strokeStyle=C.faint; ctx.setLineDash([5,5]); ctx.lineWidth=1; ctx.beginPath();
+    for(let i=0;i<len;i+=k){ const x=xn(hist.T[i]),y=yn(hist.Yd[i]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); } ctx.stroke(); ctx.setLineDash([]);
+    const traces=(H2,color)=>{
+      ctx.globalAlpha=.22; ctx.lineWidth=1; ctx.strokeStyle=color;
+      const stride=Math.max(1,Math.ceil(N/20));
+      for(let j=0;j<N;j+=stride){ ctx.beginPath(); for(let i=0;i<len;i+=k){ const x=xn(hist.T[i]),y=yn(H2[i][j]); i?ctx.lineTo(x,y):ctx.moveTo(x,y);} ctx.stroke(); }
+      ctx.globalAlpha=1; ctx.lineWidth=2.25; ctx.beginPath();
+      for(let i=0;i<len;i+=k){ let m=0; const a=H2[i]; for(let j=0;j<N;j++) m+=a[j]; const x=xn(hist.T[i]),y=yn(m/N); i?ctx.lineTo(x,y):ctx.moveTo(x,y);} ctx.stroke();
+    };
+    traces(hist.Y_std,C.std); traces(hist.Y_dsr,C.dsr);
+  }
 
-    // vertical range across trajectories + desired
-    let yMin=Infinity,yMax=-Infinity;
-    hist.Y_std.forEach(arr=>arr.forEach(v=>{ if(v<yMin) yMin=v; if(v>yMax) yMax=v; }));
-    hist.Y_dsr.forEach(arr=>arr.forEach(v=>{ if(v<yMin) yMin=v; if(v>yMax) yMax=v; }));
-    hist.Yd.forEach(v=>{ if(v<yMin) yMin=v; if(v>yMax) yMax=v; });
-    if(yMax<=yMin) yMax=yMin+1;
+  // ---------- Metrics & status ----------
+  function setBars(aId,bId,a,b){
+    const m=Math.max(a,b,1e-9);
+    el(aId).style.width=(isFinite(a)?Math.min(100,100*a/m):100)+'%';
+    el(bId).style.width=(isFinite(b)?Math.min(100,100*b/m):100)+'%';
+  }
+  function updateMetrics(){
+    const n=acc.n;
+    el('progBar').style.width=Math.min(100,100*t/Tmax)+'%';
+    el('progTxt').textContent=`${fmt(Math.min(t,Tmax),1)} / ${+Tmax.toFixed(1)} s`;
+    if(!n){ ['avgDStd','avgDDsr','avgEStd','avgEDsr'].forEach(id=>el(id).textContent='—');
+      ['avgDStdBar','avgDDsrBar','avgEStdBar','avgEDsrBar'].forEach(id=>el(id).style.width='0');
+      el('headline').innerHTML='—'; el('headlineSub').textContent='Press play to compare the average deformation over the run.'; return; }
+    const dS=acc.D_std/n, dD=acc.D_dsr/n, eS=acc.E_std/n, eD=acc.E_dsr/n;
+    const show=v=>isFinite(v)&&v<1e4?fmt(v,2):'∞';
+    el('avgDStd').textContent=show(dS); el('avgDDsr').textContent=show(dD);
+    el('avgEStd').textContent=show(eS); el('avgEDsr').textContent=show(eD);
+    setBars('avgDStdBar','avgDDsrBar',dS,dD); setBars('avgEStdBar','avgEDsrBar',eS,eD);
+    if(!isFinite(dD)||dD>1e4){ el('headline').innerHTML='<span class="bad">Unstable</span>'; el('headlineSub').textContent='The DSR gains are outside the stability bound. Use “Fix it” above.'; return; }
+    if(!isFinite(dS)||dS>1e4){ el('headline').innerHTML='<span class="bad">Std unstable</span>'; el('headlineSub').textContent='Lower γ or δt to stabilise the standard method.'; return; }
+    const pct=dS>1e-9?(1-dD/dS)*100:0;
+    const label = (pct>=0?'−':'+')+Math.abs(Math.round(pct))+'%';
+    const cls = !done ? '' : (pct>=0 ? 'dsr' : 'std');
+    el('headline').innerHTML = `<span class="${cls}">${label}</span><small>deformation</small>`;
+    el('headlineSub').textContent = done
+      ? (pct>=0 ? `Over ${+Tmax.toFixed(1)} s, the DSR team stretched the object ${Math.round(pct)}% less on average.` : 'With these gains DSR did not help. Try “Restore defaults”.')
+      : `Running average. Final result at ${+Tmax.toFixed(1)} s.`;
+  }
 
-    // FIXED x-axis: 0..Tmax
-    const xn = (tval)=> x0 + (x1-x0) * (tval/Tmax);
-    const yn = v => y0 - (y0-y1) * ((v-yMin)/(yMax-yMin));
-
-    // axes
-    ctxT.strokeStyle=colors.axis; ctxT.beginPath(); ctxT.moveTo(x0,y1); ctxT.lineTo(x0,y0); ctxT.lineTo(x1,y0); ctxT.stroke();
-
-    // desired
-    ctxT.strokeStyle=colors.desired; ctxT.setLineDash([4,4]); ctxT.beginPath();
-    hist.Yd.forEach((v,i)=>{ const x=xn(hist.T[i]); const y=yn(v); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); });
-    ctxT.stroke(); ctxT.setLineDash([]);
-
-    // agents
-    ctxT.globalAlpha = 0.35; ctxT.lineWidth = 1;
-    for(let j=0;j<N;j++){
-      ctxT.strokeStyle = colors.std;
-      ctxT.beginPath(); hist.Y_std.forEach((arr,i)=>{ const x=xn(hist.T[i]), y=yn(arr[j]); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
-      ctxT.strokeStyle = colors.dsr;
-      ctxT.beginPath(); hist.Y_dsr.forEach((arr,i)=>{ const x=xn(hist.T[i]), y=yn(arr[j]); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
-    }
-    ctxT.globalAlpha = 1;
-
-    // mean trajectories
-    ctxT.lineWidth = 2.2;
-    ctxT.strokeStyle = colors.std; ctxT.beginPath();
-    hist.Y_std.forEach((arr,i)=>{ const avg = arr.reduce((a,b)=>a+b,0)/arr.length; const x=xn(hist.T[i]), y=yn(avg); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
-    ctxT.strokeStyle = colors.dsr; ctxT.beginPath();
-    hist.Y_dsr.forEach((arr,i)=>{ const avg = arr.reduce((a,b)=>a+b,0)/arr.length; const x=xn(hist.T[i]), y=yn(avg); if(i===0) ctxT.moveTo(x,y); else ctxT.lineTo(x,y); }); ctxT.stroke();
+  function stabilityStatus(){
+    const condStd = gamma>0 && gamma*dt < 2/lamMax;
+    const betaMax = 4/(lamMax*(alpha*dt+2));
+    const condDSR = alpha>0 && beta>0 && beta<betaMax;
+    el('lamMax').textContent=fmt(lamMax,3);
+    el('stdStable').innerHTML = condStd ? '<span class="ok">Stable</span>' : `<span class="bad">Unstable</span> (γ·δt = ${fmt(gamma*dt,3)})`;
+    el('dsrBound').innerHTML = `<span class="${condDSR?'ok':'bad'}">β &lt; ${fmt(betaMax,3)}</span> <span style="color:var(--muted);font-weight:400;font-size:13px">(β = ${fmt(beta,2)})</span>`;
+    const alert=el('stabAlert');
+    if(!condDSR || !condStd){
+      el('stabMsg').textContent = !condDSR
+        ? `β = ${fmt(beta,2)} is above the DSR stability bound (${fmt(betaMax,3)}), so the DSR team will diverge.`
+        : `γ·δt is too large for this network, so the standard team will diverge.`;
+      el('fixBeta').hidden = condDSR;
+      alert.classList.add('show');
+    } else alert.classList.remove('show');
+    postHeight();
   }
 
   function syncLabels(){
-    // update shown slider numbers if spans exist
-    if(stiffV) stiffV.textContent=fmt(parseFloat(stiffEl.value),2);
-    if(kpinV) kpinV.textContent=fmt(parseFloat(kpinEl.value),1);
-    if(dtV) dtV.textContent=fmt(parseFloat(dtEl.value),3);
-    if(gammaV) gammaV.textContent=fmt(parseFloat(gammaEl.value),2);
-    if(alphaV) alphaV.textContent=fmt(parseFloat(alphaEl.value),2);
-    if(betaV) betaV.textContent=fmt(parseFloat(betaEl.value),3);
-    if(ydAV) ydAV.textContent=fmt(parseFloat(ydAEl.value),2);
-    if(ydFV) ydFV.textContent=fmt(parseFloat(ydFEl.value),2);
-    if(y0V) y0V.textContent=fmt(parseFloat(y0El.value),2);
+    el('n_v').textContent=inputs.n.value;
+    el('ydA_v').textContent=fmt(+inputs.ydA.value,2);
+    el('ydF_v').textContent=fmt(+inputs.ydF.value,2);
+    el('gamma_v').textContent=fmt(+inputs.gamma.value,2);
+    el('beta_v').textContent=fmt(+inputs.beta.value,2);
+    el('alpha_v').textContent=fmt(+inputs.alpha.value,2);
+    el('stiff_v').textContent=fmt(+inputs.stiff.value,2);
+    el('kpin_v').textContent=fmt(+inputs.kpin.value,1);
+    el('dt_v').textContent=fmt(+inputs.dt.value,3);
+    el('y0_v').textContent=fmt(+inputs.y0.value,2);
   }
 
-  function rebuild(){
-    // read inputs
-    N = Math.max(2, Math.min(200, parseInt(nEl.value,10) || 20));
-    topo = topoEl.value;
-    s = parseFloat(stiffEl.value);
-    kp = parseFloat(kpinEl.value);
-    L = Math.min(N, Math.max(1, parseInt(leadersEl.value,10) || 1));
-    dt = Math.max(1e-6, parseFloat(dtEl.value));
-    gamma = parseFloat(gammaEl.value);
-    alpha = parseFloat(alphaEl.value);
-    beta = parseFloat(betaEl.value);
-    y0 = parseFloat(y0El.value);
-    ydType = ydTypeEl.value; ydA = parseFloat(ydAEl.value); ydF = parseFloat(ydFEl.value);
-    Tmax = Math.max(0.001, parseFloat(tmaxEl.value) || 10);
-
-    // build matrices etc
-    buildKB();
-
-    // compute fixed y-axis range based on expected desired amplitude over [0, Tmax]
-    const expectedMax = expectedMaxDesired();
-    const base = Math.max(Math.abs(y0), expectedMax, 0.5);
-    const padFactor = 1.2;
-    const ySpan = base * padFactor * 2; // symmetric around zero
-    yAxisMin = -Math.abs(ySpan)/2;
-    yAxisMax = Math.abs(ySpan)/2;
-
-    resetStates();
-    stabilityStatus();
-    drawAgents(desired(0));
-    drawHistory();
-    drawTimeSeries();
-  }
-
-  // function loop(){
-  //   if(!running) return;
-  //   if(t >= Tmax){ running = false; return; } // stop at Tmax
-  //   stepOnce();
-  //   if(running) requestAnimationFrame(loop);
-  // }
-
-  function loop(){
-    if(!running) return;
-    if(t < Tmax){
-      stepOnce();
-      requestAnimationFrame(loop);
-    } else {
-      running=false;
-      // After simulation stops, display max deformation values
-      const maxDstd = Math.max(...hist.D_std);
-      const maxDdsr = Math.max(...hist.D_dsr);
-      defMetricEl.innerHTML = `Std max: ${fmt(maxDstd,3)} &nbsp; | &nbsp; DSR max: ${fmt(maxDdsr,3)}`;
+  function applyMatch(){
+    inputs.alpha.disabled = matchGain.checked;
+    if(matchGain.checked){
+      const a = (+inputs.gamma.value)/(+inputs.beta.value);
+      if(a>+inputs.alpha.max) inputs.alpha.max=Math.ceil(a);
+      inputs.alpha.value=a;
     }
   }
 
-  // Listeners
-  [nEl, topoEl, stiffEl, kpinEl, leadersEl, dtEl, gammaEl, alphaEl, betaEl, ydTypeEl, ydAEl, ydFEl, y0El, tmaxEl].forEach(inp=>{
-    inp.addEventListener('input', ()=>{ syncLabels(); /*recompute layout/scale when inputs change*/ rebuild(); });
-  });
+  function readInputs(){
+    N=Math.max(2,Math.min(200,parseInt(inputs.n.value,10)||10));
+    topo=inputs.topo.value;
+    L=Math.min(N,Math.max(1,parseInt(inputs.leaders.value,10)||1));
+    s=+inputs.stiff.value; kp=+inputs.kpin.value; dt=Math.max(1e-6,+inputs.dt.value);
+    gamma=+inputs.gamma.value; alpha=+inputs.alpha.value; beta=+inputs.beta.value; y0=+inputs.y0.value;
+    ydA=+inputs.ydA.value; ydF=+inputs.ydF.value;
+    Tmax=Math.max(1,+inputs.tmax.value||20);
+  }
 
-  el('run').onclick=()=>{ if(!running){ running=true; requestAnimationFrame(loop); } };
-  el('pause').onclick=()=>{ running=false; };
-  el('reset').onclick=()=>{ running=false; rebuild(); };
-  el('randomize').onclick=()=>{ Y_std = Array(N).fill(0).map(()=> (Math.random()-0.5)*0.5 ); Y_dsr=Y_std.slice(); Yprev_dsr=Y_std.slice(); step=0; t=0; hist={D_std:[],D_dsr:[],E_std:[],E_dsr:[],T:[],Y_std:[],Y_dsr:[],Yd:[]}; drawAgents(desired(0)); drawHistory(); drawTimeSeries(); };
+  function render(){ drawAgents(); drawHistory(); drawTimeSeries(); updateMetrics(); }
 
-  // Init
-  syncLabels(); rebuild();
+  function rebuild(){
+    running=false; setPlayLabel();
+    applyMatch(); syncLabels(); readInputs();
+    buildKB(); computeAxis(); resetStates(); stabilityStatus(); render();
+  }
+
+  // ---------- Loop ----------
+  function setPlayLabel(){ el('run').textContent = running ? '❚❚ Pause' : (done ? '↻ Replay' : (step>0 ? '▶ Resume' : '▶ Play')); }
+  function loop(){
+    if(!running) return;
+    const per=+el('speed').value;
+    for(let i=0;i<per && t<Tmax-1e-9;i++) stepOnce();
+    if(t>=Tmax-1e-9){ running=false; done=true; }
+    render(); setPlayLabel();
+    if(running) requestAnimationFrame(loop);
+  }
+  function play(){
+    if(done){ resetStates(); }
+    running=true; setPlayLabel(); requestAnimationFrame(loop);
+  }
+
+  // ---------- Events ----------
+  Object.values(inputs).forEach(inp=>inp.addEventListener('input',rebuild));
+  matchGain.addEventListener('change',rebuild);
+
+  document.querySelectorAll('[data-yd]').forEach(b=>b.addEventListener('click',()=>{
+    ydType=b.dataset.yd;
+    document.querySelectorAll('[data-yd]').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+    const cfg={step:['Jump to a new position and hold it.','Step size',1],
+               ramp:['Move steadily in one direction.','Speed (units/s)',0.2],
+               sine:['Move back and forth like a wave.','Wave amplitude',1]}[ydType];
+    el('ydHint').textContent=cfg[0]; el('ydALabel').textContent=cfg[1]; inputs.ydA.value=cfg[2];
+    el('ydFField').hidden = ydType!=='sine';
+    rebuild(); postHeight();
+  }));
+
+  el('run').onclick=()=>{ if(running){ running=false; setPlayLabel(); } else play(); };
+  el('reset').onclick=rebuild;
+  el('randomize').onclick=()=>{
+    running=false;
+    const span=(yHi-yLo)*0.35, mid=(yHi+yLo)/2;
+    resetStates(Array.from({length:N},()=>mid+(Math.random()-0.5)*span));
+    render(); setPlayLabel();
+  };
+  el('heroPlay').onclick=()=>{
+    if(window.parent===window) el('simulator').scrollIntoView({behavior:'smooth',block:'start'});
+    else { try{ parent.postMessage({type:'sim-scroll', top: el('simulator').offsetTop}, '*'); }catch(e){} }
+    rebuild(); play();
+  };
+  el('fixBeta').onclick=()=>{
+    const bMax=4/(lamMax*(alpha*dt+2));
+    inputs.beta.value=Math.max(0.01, Math.floor(bMax*0.85*100)/100);
+    rebuild();
+  };
+  el('restoreDefaults').onclick=()=>{
+    Object.entries(DEFAULTS).forEach(([k,v])=>inputs[k].value=v);
+    matchGain.checked=true; rebuild();
+  };
+
+  // ---------- Sizing (canvases + parent iframe) ----------
+  function postHeight(){
+    if(window.parent===window) return;
+    try{ parent.postMessage({type:'sim-height', height: document.querySelector('.wrap').offsetHeight}, '*'); }catch(e){}
+  }
+  let rt;
+  window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ A.fit(); H.fit(); T.fit(); render(); postHeight(); },80); });
+  if('ResizeObserver' in window) new ResizeObserver(postHeight).observe(document.querySelector('.wrap'));
+  document.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',postHeight));
+
+  rebuild(); postHeight();
 })();
 </script>
 </body>
