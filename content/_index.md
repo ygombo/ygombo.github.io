@@ -50,6 +50,8 @@ sections:
           description: Practical sessions where teams put AI tools to work on real tasks
         - title: Robotics & AI Technical Classes
           description: Robot control, multi-robot systems and computer vision in practice
+        - title: Education & Motivation
+          description: My journey from Papua to a Ph.D. in the US, and why education opens doors worth chasing
       booking:
         - label: E
           text: gombo.yoshua@gmail.com
