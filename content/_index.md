@@ -30,6 +30,44 @@ sections:
           size: cover
           position: center
           parallax: false
+  - block: speaker-card
+    id: speaking
+    content:
+      username: admin
+      eyebrow: Speaker · AI & Robotics
+      name: Yoshua Gombo, Ph.D.
+      role: Co-Founder & CTO, Konstruksi.AI
+      bio_title: Speaker Bio
+      bio: |-
+        Yoshua Gombo is a robotics engineer and the co-founder and CTO of [Konstruksi.AI](https://konstruksi.ai/), a Jakarta-based startup using AI and computer vision to monitor construction projects in real time. He holds a Ph.D. and M.S. in Mechanical Engineering from the University of Washington, where his research on decentralized control of cooperating robot teams was published in leading IEEE journals.
+
+        A tech founder and researcher from Papua, Yoshua makes AI practical and approachable, from boardrooms to classrooms, and champions education for the next generation of Indonesian scholars.
+      topics:
+        - title: AI for Everyone
+          description: Keynotes on AI literacy, prompt writing and AI in business and industry
+        - title: Hands-on AI Workshops
+          description: Practical sessions where teams put AI tools to work on real tasks
+        - title: Robotics & AI Technical Classes
+          description: Robot control, multi-robot systems and computer vision in practice
+      booking:
+        - label: E
+          text: gombo.yoshua@gmail.com
+          url: mailto:gombo.yoshua@gmail.com
+        - label: in
+          text: linkedin.com/in/yoshua-gombo
+          url: https://www.linkedin.com/in/yoshua-gombo/
+      button:
+        text: Invite me to speak
+        url: mailto:gombo.yoshua@gmail.com?subject=Speaking%20invitation
+      quote: My dream is to see humans and robots working together.
+      credentials:
+        - Ph.D. & M.S., Mechanical Engineering, University of Washington
+        - Published in IEEE T-RO, IEEE/ASME T-MECH & IEEE RA-L
+        - Co-Founder & CTO, Konstruksi.AI
+        - Host, Ekskul Podcast
+    design:
+      spacing:
+        padding: ["4rem", 0, "2rem", 0]
   - block: markdown
     content:
       title: '📚 My Research'

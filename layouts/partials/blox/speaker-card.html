@@ -1,0 +1,108 @@
+{{/* Custom block: Speaker Card */}}
+{{ $page := .wcPage }}
+{{ $block := .wcBlock }}
+{{ $c := $block.content }}
+
+{{/* Avatar from author profile */}}
+{{ $avatar := false }}
+{{ with site.GetPage (printf "authors/%s" ($c.username | default "admin")) }}
+  {{ $avatar = (.Resources.ByType "image").GetMatch "*avatar*" }}
+{{ end }}
+
+<style>
+  .spk { --spk-accent: rgb(var(--color-primary-600)); --spk-deep: rgb(var(--color-primary-950)); --spk-soft: rgb(var(--color-primary-50)); --spk-ink: rgb(17 24 39); --spk-muted: rgb(75 85 99); --spk-line: rgb(var(--color-primary-200)); }
+  .dark .spk { --spk-accent: rgb(var(--color-primary-400)); --spk-deep: rgb(var(--color-primary-900)); --spk-soft: rgb(255 255 255 / 0.04); --spk-ink: rgb(243 244 246); --spk-muted: rgb(156 163 175); --spk-line: rgb(255 255 255 / 0.12); }
+  .spk { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; color: var(--spk-ink); }
+  .spk-head { display: flex; align-items: center; gap: 1.75rem; margin-bottom: 1.75rem; }
+  .spk-photo { width: 7.5rem; height: 7.5rem; border-radius: 1.25rem; object-fit: cover; flex-shrink: 0; box-shadow: 0 0 0 4px var(--spk-line); }
+  .spk-eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--spk-accent); margin: 0 0 .35rem; }
+  .spk-name { font-size: 2.25rem; line-height: 1.1; font-weight: 800; margin: 0; }
+  .spk-role { font-size: 1.15rem; color: var(--spk-accent); margin: .4rem 0 0; }
+  .spk-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.75rem; align-items: start; }
+  .spk-main { background: var(--spk-deep); color: #f3f4f6; border-radius: 1.75rem; padding: 2rem 2.25rem; }
+  .spk-main h3 { font-size: 1.4rem; font-weight: 700; margin: 0 0 .75rem; color: #fff; }
+  .spk-main p { font-size: .95rem; line-height: 1.6; margin: 0 0 .75rem; color: rgb(229 231 235); }
+  .spk-main h3.spk-topics-title { margin-top: 1.5rem; }
+  .spk-topics { list-style: none; margin: 0; padding: 0; display: grid; gap: .9rem; }
+  .spk-topics li { display: flex; gap: .85rem; align-items: flex-start; }
+  .spk-num { flex-shrink: 0; width: 1.75rem; height: 1.75rem; border-radius: 9999px; background: #fff; color: var(--spk-deep); font-size: .75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: .1rem; }
+  .spk-topics strong { display: block; color: #fff; font-size: 1rem; }
+  .spk-topics span { font-size: .85rem; color: rgb(209 213 219); }
+  .spk-side { display: flex; flex-direction: column; gap: 1.75rem; padding-top: .25rem; }
+  .spk-side h4 { font-size: 1.25rem; font-weight: 700; color: var(--spk-accent); margin: 0 0 .6rem; }
+  .spk-side ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; font-size: .9rem; color: var(--spk-muted); }
+  .spk-side a { color: inherit; text-decoration: none; }
+  .spk-side a:hover { color: var(--spk-accent); text-decoration: underline; }
+  .spk-side ul b { color: var(--spk-ink); font-weight: 600; margin-right: .35rem; }
+  .spk-quote { margin: 0; font-size: 1.3rem; line-height: 1.4; font-weight: 600; color: var(--spk-ink); }
+  .spk-quote::after { content: ""; display: block; width: 4rem; height: 2px; background: var(--spk-accent); margin-top: .9rem; }
+  .spk-cite { font-size: .85rem; font-weight: 600; color: var(--spk-muted); margin-top: .5rem; }
+  .spk-cta { display: inline-block; margin-top: .75rem; padding: .55rem 1.1rem; border-radius: 9999px; background: var(--spk-accent); color: #fff !important; font-weight: 600; font-size: .9rem; text-decoration: none !important; }
+  @media (max-width: 768px) {
+    .spk-grid { grid-template-columns: 1fr; }
+    .spk-head { flex-direction: column-reverse; align-items: flex-start; gap: 1rem; }
+    .spk-name { font-size: 1.85rem; }
+    .spk-main { padding: 1.5rem 1.25rem; border-radius: 1.25rem; }
+  }
+</style>
+
+<div class="spk">
+  <div class="spk-head">
+    <div>
+      {{ with $c.eyebrow }}<p class="spk-eyebrow">{{ . }}</p>{{ end }}
+      <h2 class="spk-name">{{ $c.name }}</h2>
+      {{ with $c.role }}<p class="spk-role">{{ . }}</p>{{ end }}
+    </div>
+    {{ with $avatar }}
+      {{ $img := .Fill "300x300 Center" }}
+      <img class="spk-photo" src="{{ $img.RelPermalink }}" width="150" height="150" alt="{{ $c.name }}" loading="lazy">
+    {{ end }}
+  </div>
+
+  <div class="spk-grid">
+    <div class="spk-main">
+      <h3>{{ $c.bio_title | default "Speaker Bio" }}</h3>
+      {{ $c.bio | $page.RenderString (dict "display" "block") }}
+
+      {{ with $c.topics }}
+      <h3 class="spk-topics-title">Speaking Topics</h3>
+      <ol class="spk-topics">
+        {{ range $i, $t := . }}
+        <li>
+          <div class="spk-num">{{ printf "%02d" (add $i 1) }}</div>
+          <div><strong>{{ $t.title }}</strong><span>{{ $t.description }}</span></div>
+        </li>
+        {{ end }}
+      </ol>
+      {{ end }}
+    </div>
+
+    <div class="spk-side">
+      {{ with $c.booking }}
+      <div>
+        <h4>Booking</h4>
+        <ul>
+          {{ range . }}
+          <li><b>{{ .label }}</b>{{ if .url }}<a href="{{ .url }}" target="_blank" rel="noopener">{{ .text }}</a>{{ else }}{{ .text }}{{ end }}</li>
+          {{ end }}
+        </ul>
+        {{ with $c.button }}<a class="spk-cta" href="{{ .url }}">{{ .text }}</a>{{ end }}
+      </div>
+      {{ end }}
+
+      {{ with $c.quote }}
+      <div>
+        <blockquote class="spk-quote">“{{ . }}”</blockquote>
+        <div class="spk-cite">{{ $c.name }}</div>
+      </div>
+      {{ end }}
+
+      {{ with $c.credentials }}
+      <div>
+        <h4>Credentials</h4>
+        <ul>{{ range . }}<li>{{ . }}</li>{{ end }}</ul>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</div>
