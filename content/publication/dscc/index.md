@@ -7,7 +7,7 @@ authors:
 - Joseph Garbini
 - Santosh Devasia
 date: "2019-10-08T00:00:00Z"
-doi: "https://doi.org/10.1115/DSCC2019-9200"
+doi: "10.1115/DSCC2019-9200"
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2019-10-08T00:00:00Z"
@@ -66,10 +66,4 @@ projects: []
 slides: ""
 ---
 
-This work is driven by the results in my [previous paper](/publication/conference-paper/) on LLMs.
-
-{{% callout note %}}
-Create your slides in Markdown - click the *Slides* button to check out the example.
-{{% /callout %}}
-
-Add the publication's **full text** or **supplementary notes** here. You can use rich formatting such as including [code, math, and images](https://docs.hugoblox.com/content/writing-markdown-latex/).
+Shows experimentally that data collected during a robotic clamping operation can be used to speed up similar operations on flexible structures. Using the learned robot–workpiece relationship, operating speed was increased three times while keeping interaction forces and torques within acceptable levels.

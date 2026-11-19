@@ -14,6 +14,11 @@
   .wsm-intro { font-size: 1.1rem; line-height: 1.65; color: var(--w-ink-2); max-width: 46rem; margin: 0; }
   .wsm-facts { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.25rem 0 0; padding: 0; list-style: none; }
   .wsm-facts li { font-size: .85rem; padding: .35rem .8rem; border-radius: 9999px; background: var(--w-chip); color: var(--w-ink-2); }
+  .wsm-outcomes { margin-top: 2.5rem; padding: 1.5rem 1.75rem; border-radius: 1rem; border: 1px solid var(--w-line); background: var(--w-card); }
+  .wsm-outcomes h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 .75rem; }
+  .wsm-outcomes ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .55rem; }
+  .wsm-outcomes li { display: flex; gap: .6rem; font-size: .98rem; line-height: 1.5; color: var(--w-ink-2); }
+  .wsm-outcomes li svg { flex-shrink: 0; width: 20px; height: 20px; margin-top: .1rem; color: var(--w-ink); }
   .wsm-part { margin-top: 3rem; }
   .wsm-part-head { display: flex; align-items: baseline; gap: .75rem; margin-bottom: 1rem; padding-bottom: .75rem; border-bottom: 1px solid var(--w-line); }
   .wsm-part-head span { font-size: .8rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--w-muted); }
@@ -29,7 +34,9 @@
   .wsm-cta { margin-top: 3rem; padding: 2rem; border-radius: 1.5rem; background: var(--w-solid); color: var(--w-on-solid); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; }
   .wsm-cta h2 { font-size: 1.35rem; font-weight: 700; margin: 0 0 .35rem; color: inherit; }
   .wsm-cta p { margin: 0; opacity: .8; font-size: .95rem; }
+  .wsm-cta-btns { display: flex; flex-wrap: wrap; gap: .6rem; }
   .wsm-cta a { display: inline-block; padding: .65rem 1.25rem; border-radius: 9999px; background: var(--w-on-solid); color: var(--w-solid) !important; font-weight: 600; text-decoration: none !important; white-space: nowrap; }
+  .wsm-cta a.wsm-cta-alt { background: transparent; color: var(--w-on-solid) !important; box-shadow: inset 0 0 0 1px currentColor; }
   @media (max-width: 720px) {
     .wsm-grid { grid-template-columns: 1fr; }
     .wsm-cta { padding: 1.5rem; }
@@ -42,6 +49,13 @@
   <h1>{{ $c.title }}</h1>
   {{ with $c.intro }}<p class="wsm-intro">{{ . | $page.RenderString }}</p>{{ end }}
   {{ with $c.facts }}<ul class="wsm-facts">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}
+
+  {{ with $c.outcomes }}
+  <section class="wsm-outcomes">
+    <h2>{{ $c.outcomes_title | default "What participants leave with" }}</h2>
+    <ul>{{ range . }}<li>{{ partial "functions/get_icon" (dict "name" "check-circle" "attributes" "width=\"20\" height=\"20\" aria-hidden=\"true\"") }}<span>{{ . }}</span></li>{{ end }}</ul>
+  </section>
+  {{ end }}
 
   {{ $n := 0 }}
   {{ range $pi, $part := $c.parts }}
@@ -68,7 +82,10 @@
       <h2>{{ .title }}</h2>
       {{ with .text }}<p>{{ . }}</p>{{ end }}
     </div>
-    <a href="{{ .url }}">{{ .button }}</a>
+    <div class="wsm-cta-btns">
+      <a href="{{ .url }}">{{ .button }}</a>
+      {{ with .secondary }}<a class="wsm-cta-alt" href="{{ .url }}">{{ .button }}</a>{{ end }}
+    </div>
   </div>
   {{ end }}
 </div>

@@ -36,7 +36,7 @@ profiles:
   # - icon: brands/x
   #   url: https://twitter.com/GetResearchDev
   - icon: brands/instagram
-    url: https://www.instagram.com/ygombo_/?utm_source=qr#
+    url: https://www.instagram.com/ygombo_/
   - icon: brands/github
     url: https://github.com/ygombo
   - icon: brands/linkedin
@@ -142,7 +142,7 @@ work:
     date_end: 2018-06-15
     summary: |
       Responsibilities include:
-      - Innovated new composite window products and co-assigned of 20+ US patents
+      - Innovated new composite window products and co-assigned on 20+ US patents
       - Assessed the structural integrity of window/door designs using Finite Element Analysis (FEA)
 
 # Skills

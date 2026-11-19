@@ -1,7 +1,7 @@
 ---
 # Leave the homepage title empty to use the site title
 title: ""
-date: 2022-10-24
+date: 2026-11-19
 type: landing
 
 design:
@@ -97,7 +97,7 @@ sections:
       columns: 2
   - block: collection
     content:
-      title: Recent Publications
+      title: All Publications
       count: 0
       text: ""
       filters:

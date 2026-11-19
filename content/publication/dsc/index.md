@@ -8,7 +8,7 @@ authors:
 - Santosh Devasia
 author_notes:
 date: "2023-07-01T00:00:00Z"
-doi: "https://doi.org/10.1115/1.4063606"
+doi: "10.1115/1.4063606"
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2023-07-01T00:00:00Z"
@@ -69,14 +69,4 @@ slides: ""
 
 ---
 
-
-
-{{% callout note %}}
-Click the *Cite* button above to demo the feature to enable visitors to import publication metadata into their reference management software.
-{{% /callout %}}
-
-{{% callout note %}}
-Create your slides in Markdown - click the *Slides* button to check out the example.
-{{% /callout %}}
-
-Add the publication's **full text** or **supplementary notes** here. You can use rich formatting such as including [code, math, and images](https://docs.hugoblox.com/content/writing-markdown-latex/).
+A model-free, data-based algorithm that learns the combined robot–workpiece stiffness and uses it to apply desired forces and torques when clamping or drilling elastic structures. Experiments show clamping speed increased four times while interaction forces stayed within acceptable bounds.

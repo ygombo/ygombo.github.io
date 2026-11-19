@@ -20,6 +20,11 @@ sections:
         - 11 modules
         - Hands-on exercises
         - Tailored to your team
+      outcomes_title: What participants leave with
+      outcomes:
+        - A clear understanding of how AI and large language models work, and how they got here.
+        - Practical prompting skills, already tried on real everyday and work tasks.
+        - The habits to catch hallucinations and use AI responsibly and ethically.
       parts:
         - title: Foundations
           modules:
@@ -67,4 +72,7 @@ sections:
         text: Get in touch to discuss your audience, schedule and goals.
         button: Invite me to run it
         url: mailto:gombo.yoshua@gmail.com?subject=AI%20workshop%20invitation
+        secondary:
+          button: Request a proposal
+          url: mailto:gombo.yoshua@gmail.com?subject=AI%20Workshop%20%E2%80%93%20Proposal%20Request
 ---

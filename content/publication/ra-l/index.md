@@ -6,7 +6,7 @@ authors:
 - Santosh Devasia
 author_notes:
 date: "2020-11-06T00:00:00Z"
-doi: "https://doi.org/10.1109/LRA.2020.3036569"
+doi: "10.1109/LRA.2020.3036569"
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2020-11-06T00:00:00Z"
@@ -67,14 +67,4 @@ slides: ""
 
 ---
 
-
-
-{{% callout note %}}
-Click the *Cite* button above to demo the feature to enable visitors to import publication metadata into their reference management software.
-{{% /callout %}}
-
-{{% callout note %}}
-Create your slides in Markdown - click the *Slides* button to check out the example.
-{{% /callout %}}
-
-Add the publication's **full text** or **supplementary notes** here. You can use rich formatting such as including [code, math, and images](https://docs.hugoblox.com/content/writing-markdown-latex/).
+An accelerated-gradient approach (A-DSR) for transporting flexible objects faster with a decentralized robot team, using only local force sensing and no inter-robot communication. Experiments show 60% less deformation for the same transport time, or 59% shorter transport time for the same deformation.
