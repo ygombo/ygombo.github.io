@@ -20,7 +20,7 @@ superuser: true
 highlight_name: true
 
 # Role/position/tagline
-role: Co-founder & CTO | Robotics Engineer
+role: Co-Founder & CTO | Robotics Engineer
 
 # Organizations/Affiliations to display in Biography blox
 organizations:
@@ -34,7 +34,7 @@ profiles:
     url: 'mailto:gombo.yoshua@gmail.com'
     label: E-mail Me
   # - icon: brands/x
-  #   url: https://twitter.com/GetResearchDev
+  #   url: https://twitter.com/
   - icon: brands/instagram
     url: https://www.instagram.com/ygombo_/
   - icon: brands/github
@@ -52,7 +52,7 @@ interests:
   - AI & Machine Learning
 
 education:
-  - area: PhD Mechanical Engineering
+  - area: Ph.D. Mechanical Engineering
     institution: University of Washington, USA
     date_start: 2019-09-01
     date_end: 2023-12-15

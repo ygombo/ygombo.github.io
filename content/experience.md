@@ -1,5 +1,6 @@
 ---
 title: 'Experience'
+summary: 'Experience of Yoshua Gombo, Ph.D. — Co-Founder & CTO at Konstruksi.AI, robotics researcher at the University of Washington and Boeing Advanced Research Center, and robotics engineer at DEKA.'
 date: 2026-11-19
 type: landing
 
