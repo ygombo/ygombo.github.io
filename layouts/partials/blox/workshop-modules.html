@@ -1,0 +1,72 @@
+{{/* Custom block: Workshop Modules */}}
+{{ $page := .wcPage }}
+{{ $block := .wcBlock }}
+{{ $c := $block.content }}
+
+<style>
+  .wsm { --w-ink: #171717; --w-ink-2: #404040; --w-muted: #525252; --w-line: #e5e5e5; --w-card: #fafafa; --w-chip: #f0f0f0; --w-solid: #171717; --w-on-solid: #fff; }
+  .dark .wsm { --w-ink: #f5f5f5; --w-ink-2: #d4d4d4; --w-muted: #a3a3a3; --w-line: rgb(255 255 255 / 0.1); --w-card: #1f1f1f; --w-chip: #2a2a2a; --w-solid: #e5e5e5; --w-on-solid: #171717; }
+  .wsm { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; color: var(--w-ink); }
+  .wsm-back { display: inline-block; font-size: .9rem; color: var(--w-muted); text-decoration: none; margin-bottom: 1.5rem; }
+  .wsm-back:hover { color: var(--w-ink); }
+  .wsm-eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--w-muted); margin: 0 0 .5rem; }
+  .wsm h1 { font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.1; font-weight: 800; letter-spacing: -.02em; margin: 0 0 1rem; }
+  .wsm-intro { font-size: 1.1rem; line-height: 1.65; color: var(--w-ink-2); max-width: 46rem; margin: 0; }
+  .wsm-facts { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.25rem 0 0; padding: 0; list-style: none; }
+  .wsm-facts li { font-size: .85rem; padding: .35rem .8rem; border-radius: 9999px; background: var(--w-chip); color: var(--w-ink-2); }
+  .wsm-part { margin-top: 3rem; }
+  .wsm-part-head { display: flex; align-items: baseline; gap: .75rem; margin-bottom: 1rem; padding-bottom: .75rem; border-bottom: 1px solid var(--w-line); }
+  .wsm-part-head span { font-size: .8rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--w-muted); }
+  .wsm-part-head h2 { font-size: 1.35rem; font-weight: 700; margin: 0; }
+  .wsm-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .wsm-card { display: flex; gap: 1rem; padding: 1.25rem; border-radius: 1rem; background: var(--w-card); border: 1px solid var(--w-line); }
+  .wsm-num { flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: var(--w-solid); color: var(--w-on-solid); font-size: .8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .wsm-card h3 { font-size: 1.05rem; font-weight: 700; margin: .15rem 0 .35rem; line-height: 1.3; }
+  .wsm-card p { font-size: .92rem; line-height: 1.55; color: var(--w-muted); margin: 0; }
+  .wsm-tag { display: inline-block; font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: .15rem .55rem; border-radius: 9999px; border: 1px solid var(--w-line); color: var(--w-ink-2); margin-left: .4rem; vertical-align: 2px; }
+  .wsm-cta { margin-top: 3rem; padding: 2rem; border-radius: 1.5rem; background: var(--w-solid); color: var(--w-on-solid); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; }
+  .wsm-cta h2 { font-size: 1.35rem; font-weight: 700; margin: 0 0 .35rem; color: inherit; }
+  .wsm-cta p { margin: 0; opacity: .8; font-size: .95rem; }
+  .wsm-cta a { display: inline-block; padding: .65rem 1.25rem; border-radius: 9999px; background: var(--w-on-solid); color: var(--w-solid) !important; font-weight: 600; text-decoration: none !important; white-space: nowrap; }
+  @media (max-width: 720px) {
+    .wsm-grid { grid-template-columns: 1fr; }
+    .wsm-cta { padding: 1.5rem; }
+  }
+</style>
+
+<div class="wsm">
+  {{ with $c.back }}<a class="wsm-back" href="{{ .url | relURL }}">← {{ .text }}</a>{{ end }}
+  {{ with $c.eyebrow }}<p class="wsm-eyebrow">{{ . }}</p>{{ end }}
+  <h1>{{ $c.title }}</h1>
+  {{ with $c.intro }}<p class="wsm-intro">{{ . | $page.RenderString }}</p>{{ end }}
+  {{ with $c.facts }}<ul class="wsm-facts">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}
+
+  {{ $n := 0 }}
+  {{ range $pi, $part := $c.parts }}
+  <section class="wsm-part">
+    <div class="wsm-part-head"><span>Part {{ add $pi 1 }}</span><h2>{{ $part.title }}</h2></div>
+    <ol class="wsm-grid">
+      {{ range $part.modules }}
+      {{ $n = add $n 1 }}
+      <li class="wsm-card">
+        <div class="wsm-num">{{ printf "%02d" $n }}</div>
+        <div>
+          <h3>{{ .title }}{{ if .hands_on }}<span class="wsm-tag">Hands-on</span>{{ end }}</h3>
+          <p>{{ .description }}</p>
+        </div>
+      </li>
+      {{ end }}
+    </ol>
+  </section>
+  {{ end }}
+
+  {{ with $c.cta }}
+  <div class="wsm-cta">
+    <div>
+      <h2>{{ .title }}</h2>
+      {{ with .text }}<p>{{ . }}</p>{{ end }}
+    </div>
+    <a href="{{ .url }}">{{ .button }}</a>
+  </div>
+  {{ end }}
+</div>

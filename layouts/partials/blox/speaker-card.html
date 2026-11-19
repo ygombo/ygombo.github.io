@@ -30,6 +30,8 @@
   .spk-num { flex-shrink: 0; width: 1.75rem; height: 1.75rem; border-radius: 9999px; background: #fff; color: var(--spk-deep); font-size: .75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: .1rem; }
   .spk-topics strong { display: block; color: #fff; font-size: 1rem; }
   .spk-topics span { font-size: .85rem; color: #d4d4d4; }
+  .spk-topic-link { display: inline-block; margin-top: .3rem; font-size: .85rem; font-weight: 600; color: #fff !important; text-decoration: underline !important; text-underline-offset: 3px; text-decoration-color: rgb(255 255 255 / 0.4) !important; }
+  .spk-topic-link:hover { text-decoration-color: #fff !important; }
   .spk-side { display: flex; flex-direction: column; gap: 1.75rem; padding-top: .25rem; }
   .spk-side h4 { font-size: 1.25rem; font-weight: 700; color: var(--spk-accent); margin: 0 0 .6rem; }
   .spk-side ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; font-size: .9rem; color: var(--spk-muted); }
@@ -75,7 +77,7 @@
         {{ range $i, $t := . }}
         <li>
           <div class="spk-num">{{ printf "%02d" (add $i 1) }}</div>
-          <div><strong>{{ $t.title }}</strong><span>{{ $t.description }}</span></div>
+          <div><strong>{{ $t.title }}</strong><span>{{ $t.description }}</span>{{ with $t.link }}<a class="spk-topic-link" href="{{ .url | relURL }}">{{ .text }} →</a>{{ end }}</div>
         </li>
         {{ end }}
       </ol>

@@ -47,6 +47,9 @@ sections:
           description: Keynotes on AI literacy, prompt writing and AI in business and industry
         - title: Hands-on AI Workshops
           description: Practical sessions where teams put AI tools to work on real tasks
+          link:
+            text: See the 11 workshop modules
+            url: /ai-workshop/
         - title: Robotics & AI Technical Classes
           description: Robot control, multi-robot systems and computer vision in practice
         - title: Education & Motivation
