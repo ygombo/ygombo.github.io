@@ -58,6 +58,9 @@ sections:
         - label: E
           text: gombo.yoshua@gmail.com
           url: mailto:gombo.yoshua@gmail.com
+        - label: WA
+          text: +62 823-1084-6545
+          url: https://wa.me/6282310846545
         - label: in
           text: linkedin.com/in/yoshua-gombo
           url: https://www.linkedin.com/in/yoshua-gombo/
