@@ -39,7 +39,7 @@ sections:
       role: Co-Founder & CTO, Konstruksi.AI
       bio_title: Speaker Bio
       bio: |-
-        Yoshua Gombo is a robotics engineer and the co-founder and CTO of [Konstruksi.AI](https://konstruksi.ai/), a Jakarta-based startup using AI and computer vision to monitor construction projects in real time. He holds a Ph.D. and M.S. in Mechanical Engineering from the University of Washington, where his research on decentralized control of cooperating robot teams was published in leading IEEE journals.
+        Yoshua Gombo is a robotics engineer and the co-founder and CTO of [Konstruksi.AI](https://konstruksi.ai/), a Jakarta-based startup using AI and computer vision to monitor construction projects in real time. He holds a Ph.D. and M.S. in Mechanical Engineering from the University of Washington, where his research on decentralized control of cooperating robot teams was published in leading IEEE journals. He also serves as a Supervising Lecturer at the Faculty of Production Media, University of Indonesia.
 
         A tech founder and researcher from Papua, Yoshua makes AI practical and approachable, from boardrooms to classrooms, and champions education for the next generation of Indonesian scholars.
       topics:
@@ -69,6 +69,7 @@ sections:
         - Ph.D. & M.S., Mechanical Engineering, University of Washington
         - Published in IEEE T-RO, IEEE/ASME T-MECH & IEEE RA-L
         - Co-Founder & CTO, Konstruksi.AI
+        - Supervising Lecturer, Faculty of Production Media, University of Indonesia
         - Host, Ekskul Podcast
     design:
       spacing:
