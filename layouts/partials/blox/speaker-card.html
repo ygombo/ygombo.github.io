@@ -87,7 +87,7 @@
     <div class="spk-side">
       {{ with $c.booking }}
       <div>
-        <h4>Booking</h4>
+        <h4>{{ $c.booking_title | default "Invite me" }}</h4>
         <ul>
           {{ range . }}
           <li><b>{{ .label }}</b>{{ if .url }}<a href="{{ .url }}" target="_blank" rel="noopener">{{ .text }}</a>{{ else }}{{ .text }}{{ end }}</li>

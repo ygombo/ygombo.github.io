@@ -54,6 +54,7 @@ sections:
           description: Robot control, multi-robot systems and computer vision in practice
         - title: Education & Motivation
           description: My journey from Papua to a Ph.D. in the US, and why education opens doors worth chasing
+      booking_title: Invite me
       booking:
         - label: E
           text: gombo.yoshua@gmail.com
